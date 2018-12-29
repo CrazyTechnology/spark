@@ -80,7 +80,7 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
     * Use this with caution;
    * once a broadcast variable has been destroyed, it cannot be used again.
    * This method blocks until destroy has completed
-    * 使用这个方法需要注意
+    * 使用这个方法需要注意：
     * 一旦被销毁之后就不能够再被使用了。在销毁的这段时间内会加上锁
    */
   def destroy(): Unit = {
