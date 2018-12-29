@@ -43,6 +43,7 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
   /**
    * Flag signifying whether the broadcast variable is valid
    * (that is, not already destroyed) or not.
+    * 判断broadcast是否有效
    */
   @volatile private var _isValid = true
 
@@ -75,14 +76,13 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
 
 
   /**
-   * Destroy all data and metadata related to this broadcast variable.
-    * 销毁所有和broadcast相关的数据和元数据
-    * Use this with caution;
-   * once a broadcast variable has been destroyed, it cannot be used again.
-   * This method blocks until destroy has completed
-    * 使用这个方法需要注意：
-    * 一旦被销毁之后就不能够再被使用了。在销毁的这段时间内会加上锁
-   */
+    * Destroy all data and metadata related to this broadcast variable. Use this with caution;
+    * 销毁与此广播变量相关的所有数据和元数据。请谨慎使用;
+    * once a broadcast variable has been destroyed, it cannot be used again.
+    * 一旦broadcast变量被销毁，就不能再次被使用了
+    * This method blocks until destroy has completed
+    * 此方法将阻塞，直到销毁完成
+    */
   def destroy(): Unit = {
     destroy(blocking = true)
   }
@@ -97,6 +97,7 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
     _isValid = false
     _destroySite = Utils.getCallSite().shortForm
     logInfo("Destroying %s (from %s)".format(toString, _destroySite))
+    //销毁时是否锁住
     doDestroy(blocking)
   }
 
@@ -124,6 +125,7 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
    * Actually destroy all data and metadata related to this broadcast variable.
    * Implementation of Broadcast class must define their own logic to destroy their own
    * state.
+    * 由它的实现类来具体实现销毁方法
    */
   protected def doDestroy(blocking: Boolean)
 
