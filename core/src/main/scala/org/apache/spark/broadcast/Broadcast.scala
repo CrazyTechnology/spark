@@ -48,7 +48,8 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
 
   private var _destroySite = ""
 
-  /** Get the broadcasted value. */
+  /** Get the broadcasted value.
+    * 获取广播变量的值 */
   def value: T = {
     assertValid()
     getValue()
@@ -74,11 +75,15 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
 
 
   /**
-   * Destroy all data and metadata related to this broadcast variable. Use this with caution;
+   * Destroy all data and metadata related to this broadcast variable.
+    * 销毁所有和broadcast相关的数据和元数据
+    * Use this with caution;
    * once a broadcast variable has been destroyed, it cannot be used again.
    * This method blocks until destroy has completed
+    * 使用这个方法需要注意
+    * 一旦被销毁之后就不能够再被使用了。在销毁的这段时间内会加上锁
    */
-  def destroy() {
+  def destroy(): Unit = {
     destroy(blocking = true)
   }
 
