@@ -56,6 +56,7 @@ class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Seria
   /** Create a SparkConf that loads defaults from system properties and the classpath */
   def this() = this(true)
 
+  //settings配置信息保存在ConcurrentHashMap中，是线程安全的
   private val settings = new ConcurrentHashMap[String, String]()
 
   @transient private lazy val reader: ConfigReader = {
@@ -78,7 +79,8 @@ class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Seria
     this
   }
 
-  /** Set a configuration variable. */
+  /** Set a configuration variable.
+    * 设置配置信息 */
   def set(key: String, value: String): SparkConf = {
     set(key, value, false)
   }

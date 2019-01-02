@@ -74,8 +74,10 @@ private[sql] object Dataset {
   }
 
   def ofRows(sparkSession: SparkSession, logicalPlan: LogicalPlan): DataFrame = {
+    //executePlan（）执行逻辑解析计划
     val qe = sparkSession.sessionState.executePlan(logicalPlan)
     qe.assertAnalyzed()
+    //DateFrame就是DataSet
     new Dataset[Row](sparkSession, qe, RowEncoder(qe.analyzed.schema))
   }
 }

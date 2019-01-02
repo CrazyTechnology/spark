@@ -43,5 +43,6 @@ package object sql {
   @InterfaceStability.Unstable
   type Strategy = SparkStrategy
 
+  //DataFrame就是DataSet[Row]的别名
   type DataFrame = Dataset[Row]
 }

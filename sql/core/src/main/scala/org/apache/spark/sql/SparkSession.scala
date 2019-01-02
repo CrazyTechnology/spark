@@ -635,7 +635,7 @@ class SparkSession private(
   /**
    * Executes a SQL query using Spark, returning the result as a `DataFrame`.
    * The dialect that is used for SQL parsing can be configured with 'spark.sql.dialect'.
-   *
+   * 使用spark执行查询语句，返回DataFrame结果集，可以配置sql的方言
    * @since 2.0.0
    */
   def sql(sqlText: String): DataFrame = {
@@ -775,6 +775,7 @@ object SparkSession extends Logging {
   @InterfaceStability.Stable
   class Builder extends Logging {
 
+    //可变的hashmap用来保存传入的值
     private[this] val options = new scala.collection.mutable.HashMap[String, String]
 
     private[this] val extensions = new SparkSessionExtensions
@@ -789,7 +790,7 @@ object SparkSession extends Logging {
     /**
      * Sets a name for the application, which will be shown in the Spark web UI.
      * If no application name is set, a randomly generated name will be used.
-     *
+     * 给application设置一个名字，在spark的web界面上显示的，如果不手动设置名字，将会自动生成一个名字。
      * @since 2.0.0
      */
     def appName(name: String): Builder = config("spark.app.name", name)
@@ -886,7 +887,7 @@ object SparkSession extends Logging {
     /**
      * Gets an existing [[SparkSession]] or, if there is no existing one, creates a new
      * one based on the options set in this builder.
-     *
+     * 新建一个新的sparksession或者返回已经存在的sparksession
      * This method first checks whether there is a valid thread-local SparkSession,
      * and if yes, return that one. It then checks whether there is a valid global
      * default SparkSession, and if yes, return that one. If no valid global default
@@ -901,6 +902,7 @@ object SparkSession extends Logging {
     def getOrCreate(): SparkSession = synchronized {
       assertOnDriver()
       // Get the session from current thread's active session.
+        //获取当前线程活跃的session
       var session = activeThreadSession.get()
       if ((session ne null) && !session.sparkContext.isStopped) {
         options.foreach { case (k, v) => session.sessionState.conf.setConfString(k, v) }
@@ -975,7 +977,7 @@ object SparkSession extends Logging {
 
   /**
    * Creates a [[SparkSession.Builder]] for constructing a [[SparkSession]].
-   *
+   * 创建一个Builder构造器，用来生成SparkSession
    * @since 2.0.0
    */
   def builder(): Builder = new Builder

@@ -116,6 +116,7 @@ private[spark] class ByteBufferBlockData(
  * retrieving blocks both locally and remotely into various stores (memory, disk, and off-heap).
  *
  * Note that [[initialize()]] must be called before the BlockManager is usable.
+  * BlockManager使用前必须先调用initialize方法
  */
 private[spark] class BlockManager(
     executorId: String,

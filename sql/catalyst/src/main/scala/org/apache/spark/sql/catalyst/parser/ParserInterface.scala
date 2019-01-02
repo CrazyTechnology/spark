@@ -25,11 +25,13 @@ import org.apache.spark.sql.types.{DataType, StructType}
 
 /**
  * Interface for a parser.
+  * 解析类的接口
  */
 @DeveloperApi
 trait ParserInterface {
   /**
    * Parse a string to a [[LogicalPlan]].
+    * 将String sql语句解析成Logicplan
    */
   @throws[ParseException]("Text cannot be parsed to a LogicalPlan")
   def parsePlan(sqlText: String): LogicalPlan
