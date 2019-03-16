@@ -5,3 +5,19 @@
     每台机器上保存一个数据副本
     
     用高效的广播算法（Torrent）来广播数据，已降低通信成本
+    
+2.Broadcat 抽象类
+
+    使用方法：
+    
+    保存：val broadcastVar = sc.broadcast(Array(1, 2, 3))
+    
+    取值：broadcastVar.value
+            
+    具体实现类是TorrentBroadcast
+    
+    实现机制：
+            1.driver将序列化对象分成小块，并将这些块存储在驱动程序的BlockManager中。
+            2.每个executor都会首先尝试从自己的BlockManage中获取数据。如果不存在就会从driver或者其他executor中获取数据，然后保存到自己的blockManager中以供自己或者其他的executor使用。
+            3.可以降低driver端不停的发送重复的数据。
+            4.初始化时需要获取sparEnv的信息。

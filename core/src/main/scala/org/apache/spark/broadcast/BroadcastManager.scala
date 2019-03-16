@@ -40,7 +40,9 @@ private[spark] class BroadcastManager(
   // Called by SparkContext or Executor before using Broadcast
   private def initialize() {
     synchronized {
+      //同步代码块
       if (!initialized) {
+        //默认是TorrentBroadcastFactory
         broadcastFactory = new TorrentBroadcastFactory
         broadcastFactory.initialize(isDriver, conf, securityManager)
         initialized = true
@@ -49,6 +51,7 @@ private[spark] class BroadcastManager(
   }
 
   def stop() {
+    //调用具体实现类的stop方法
     broadcastFactory.stop()
   }
 

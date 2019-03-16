@@ -630,6 +630,7 @@ private[spark] class BlockManager(
 
   /**
    * Get block from the local block manager as serialized bytes.
+    * 从本地的block manager中获取数据
    */
   def getLocalBytes(blockId: BlockId): Option[BlockData] = {
     logDebug(s"Getting local block $blockId as bytes")
@@ -720,6 +721,7 @@ private[spark] class BlockManager(
 
   /**
    * Get block from remote block managers as serialized bytes.
+    * 从远程的block manager中获取数据
    */
   def getRemoteBytes(blockId: BlockId): Option[ChunkedByteBuffer] = {
     // TODO SPARK-25905 if we change this method to return the ManagedBuffer, then getRemoteValues
@@ -733,7 +735,10 @@ private[spark] class BlockManager(
 
     // Because all the remote blocks are registered in driver, it is not necessary to ask
     // all the slave executors to get block status.
+    //因为所有的远程block都在drive中注册。所以没有必要去所有的slave节点上的executor获取block的状态
+    //在master节点上获取location和status
     val locationsAndStatus = master.getLocationsAndStatus(blockId)
+    //获取block的大小
     val blockSize = locationsAndStatus.map { b =>
       b.status.diskSize.max(b.status.memSize)
     }.getOrElse(0L)
@@ -941,7 +946,7 @@ private[spark] class BlockManager(
 
   /**
    * Put a new block of serialized bytes to the block manager.
-   *
+   *  将block块放入到block manager中
    * '''Important!''' Callers must not mutate or release the data buffer underlying `bytes`. Doing
    * so may corrupt or change the data stored by the `BlockManager`.
    *

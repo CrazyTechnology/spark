@@ -85,7 +85,8 @@ class BlockManagerMaster(
     driverEndpoint.askSync[Seq[BlockManagerId]](GetLocations(blockId))
   }
 
-  /** Get locations as well as status of the blockId from the driver */
+  /** Get locations as well as status of the blockId from the driver
+    * 根据blockId从driver上获取location和status */
   def getLocationsAndStatus(blockId: BlockId): Option[BlockLocationsAndStatus] = {
     driverEndpoint.askSync[Option[BlockLocationsAndStatus]](
       GetLocationsAndStatus(blockId))

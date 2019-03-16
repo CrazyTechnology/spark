@@ -57,7 +57,9 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
   }
 
   /**
+    * 异步删除executor上的缓存副本
    * Asynchronously delete cached copies of this broadcast on the executors.
+    * 如果删除后想要重新使用，必须重新发送
    * If the broadcast is used after this is called, it will need to be re-sent to each executor.
    */
   def unpersist() {
@@ -102,6 +104,7 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
   }
 
   /**
+    * 判断广播变量是否还能使用
    * Whether this Broadcast is actually usable. This should be false once persisted state is
    * removed from the driver.
    */
