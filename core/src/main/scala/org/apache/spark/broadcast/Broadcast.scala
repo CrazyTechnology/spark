@@ -35,8 +35,8 @@ import org.apache.spark.util.Utils
  * that all nodes get the same value of the broadcast variable (e.g. if the variable is shipped
  * to a new node later).
  *
- * @param id A unique identifier for the broadcast variable.
- * @tparam T Type of the data contained in the broadcast variable.
+ * @param id A unique identifier for the broadcast variable. 广播变量的唯一标识
+ * @tparam T Type of the data contained in the broadcast variable.  广播变量中的数据类型
  */
 abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Logging {
 
@@ -112,6 +112,8 @@ abstract class Broadcast[T: ClassTag](val id: Long) extends Serializable with Lo
   /**
    * Actually get the broadcasted value. Concrete implementations of Broadcast class must
    * define their own way to get the value.
+    * 获取broadcast的值
+    * Broadcast是个抽象类，里面的方法需要子类来实现
    */
   protected def getValue(): T
 
