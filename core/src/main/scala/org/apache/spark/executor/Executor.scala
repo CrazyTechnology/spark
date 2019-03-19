@@ -46,10 +46,12 @@ import org.apache.spark.util.io.ChunkedByteBuffer
 
 /**
  * Spark executor, backed by a threadpool to run tasks.
- *
+ * spark executor 依赖线程池来运行任务
  * This can be used with Mesos, YARN, and the standalone scheduler.
+  * 可以被yarn、mesos、standalone模式调用
  * An internal RPC interface is used for communication with the driver,
  * except in the case of Mesos fine-grained mode.
+  * 通过rpc协议来和driver进行交流通信
  */
 private[spark] class Executor(
     executorId: String,
@@ -69,6 +71,7 @@ private[spark] class Executor(
 
   private val EMPTY_BYTE_BUFFER = ByteBuffer.wrap(new Array[Byte](0))
 
+  //获取sparkenv环境配置
   private val conf = env.conf
 
   // No ip or host:port - just hostname
@@ -123,6 +126,7 @@ private[spark] class Executor(
   private val userClassPathFirst = conf.getBoolean("spark.executor.userClassPathFirst", false)
 
   // Whether to monitor killed / interrupted tasks
+  //是否监控被kill的任务
   private val taskReaperEnabled = conf.getBoolean("spark.task.reaper.enabled", false)
 
   // Create our ClassLoader
