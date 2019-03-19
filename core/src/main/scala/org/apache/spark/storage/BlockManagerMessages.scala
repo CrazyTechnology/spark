@@ -52,7 +52,7 @@ private[spark] object BlockManagerMessages {
   case object TriggerThreadDump extends ToBlockManagerSlave
 
   //////////////////////////////////////////////////////////////////////////////////
-  // Messages from slaves to the master.
+  // Messages from slaves to the master.  slaves发送到master的message
   //////////////////////////////////////////////////////////////////////////////////
   sealed trait ToBlockManagerMaster
 

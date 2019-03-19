@@ -37,7 +37,7 @@ class BlockManagerMaster(
   val timeout = RpcUtils.askRpcTimeout(conf)
 
   /** Remove a dead executor from the driver endpoint. This is only called on the driver side.
-    * Driver调用这个方法删除无效的executor，入参为executorId */
+    * 只有Driver调用这个方法删除无效的executor，入参为executorId */
   def removeExecutor(execId: String) {
     tell(RemoveExecutor(execId))
     logInfo("Removed " + execId + " successfully in removeExecutor")
@@ -45,6 +45,7 @@ class BlockManagerMaster(
 
   /** Request removal of a dead executor from the driver endpoint.
    *  This is only called on the driver side. Non-blocking
+    *  driver专用的方法删除executor
    */
   def removeExecutorAsync(execId: String) {
     driverEndpoint.ask[Boolean](RemoveExecutor(execId))
@@ -241,7 +242,8 @@ class BlockManagerMaster(
     }
   }
 
-  /** Send a one-way message to the master endpoint, to which we expect it to reply with true. */
+  /** Send a one-way message to the master endpoint, to which we expect it to reply with true.
+    * 发送单方向的消息到master端 */
   private def tell(message: Any) {
     if (!driverEndpoint.askSync[Boolean](message)) {
       throw new SparkException("BlockManagerMasterEndpoint returned false, expected true.")
