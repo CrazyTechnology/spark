@@ -58,6 +58,7 @@ private[spark] object CoarseGrainedClusterMessages {
     extends CoarseGrainedClusterMessage
 
   // Executors to driver
+  //executor注册到driver中
   case class RegisterExecutor(
       executorId: String,
       executorRef: RpcEndpointRef,
