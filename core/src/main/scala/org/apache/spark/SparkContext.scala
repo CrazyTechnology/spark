@@ -63,7 +63,7 @@ import org.apache.spark.util._
 /**
  * Main entry point for Spark functionality. A SparkContext represents the connection to a Spark
  * cluster, and can be used to create RDDs, accumulators and broadcast variables on that cluster.
- *
+ * 可以创建rdd，累加器、广播变量
  * Only one SparkContext may be active per JVM.  You must `stop()` the active SparkContext before
  * creating a new one.  This limitation may eventually be removed; see SPARK-2243 for more details.
  *
@@ -84,6 +84,7 @@ class SparkContext(config: SparkConf) extends Logging {
   // NOTE: this must be placed at the beginning of the SparkContext constructor.
   SparkContext.markPartiallyConstructed(this, allowMultipleContexts)
 
+  //任务开始执行时间
   val startTime = System.currentTimeMillis()
 
   private[spark] val stopped: AtomicBoolean = new AtomicBoolean(false)
@@ -229,6 +230,7 @@ class SparkContext(config: SparkConf) extends Logging {
 
   def jars: Seq[String] = _jars
   def files: Seq[String] = _files
+  //获取master地址
   def master: String = _conf.get("spark.master")
   def deployMode: String = _conf.getOption("spark.submit.deployMode").getOrElse("client")
   def appName: String = _conf.get("spark.app.name")
@@ -268,12 +270,15 @@ class SparkContext(config: SparkConf) extends Logging {
     val map: ConcurrentMap[Int, RDD[_]] = new MapMaker().weakValues().makeMap[Int, RDD[_]]()
     map.asScala
   }
+  //状态跟踪器
   def statusTracker: SparkStatusTracker = _statusTracker
 
+  //进度条
   private[spark] def progressBar: Option[ConsoleProgressBar] = _progressBar
 
   private[spark] def ui: Option[SparkUI] = _ui
 
+  //web界面的地址
   def uiWebUrl: Option[String] = _ui.map(_.webUrl)
 
   /**
@@ -284,16 +289,20 @@ class SparkContext(config: SparkConf) extends Logging {
    */
   def hadoopConfiguration: Configuration = _hadoopConfiguration
 
+  //executor的执行内存大小
   private[spark] def executorMemory: Int = _executorMemory
 
   // Environment variables to pass to our executors.
+  //executor的执行环境变量
   private[spark] val executorEnvs = HashMap[String, String]()
 
   // Set SPARK_USER for user who is running SparkContext.
+  //设置spark的用户
   val sparkUser = Utils.getCurrentUserName()
 
+  //后台调度进程
   private[spark] def schedulerBackend: SchedulerBackend = _schedulerBackend
-
+  //任务调度器
   private[spark] def taskScheduler: TaskScheduler = _taskScheduler
   private[spark] def taskScheduler_=(ts: TaskScheduler): Unit = {
     _taskScheduler = ts
@@ -318,6 +327,7 @@ class SparkContext(config: SparkConf) extends Logging {
 
   private[spark] def eventLogger: Option[EventLoggingListener] = _eventLogger
 
+  //executor的执行位置管理
   private[spark] def executorAllocationManager: Option[ExecutorAllocationManager] =
     _executorAllocationManager
 
@@ -350,6 +360,7 @@ class SparkContext(config: SparkConf) extends Logging {
   /** Control our logLevel. This overrides any user-defined log settings.
    * @param logLevel The desired log level as a string.
    * Valid log levels include: ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, WARN
+    * 设置日志的级别
    */
   def setLogLevel(logLevel: String) {
     // let's allow lowercase or mixed case too
@@ -2061,6 +2072,7 @@ class SparkContext(config: SparkConf) extends Logging {
     if (conf.getBoolean("spark.logLineage", false)) {
       logInfo("RDD's recursive dependencies:\n" + rdd.toDebugString)
     }
+    //调用DAGScheduler的runjob方法
     dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, resultHandler, localProperties.get)
     progressBar.foreach(_.finishAll())
     rdd.doCheckpoint()

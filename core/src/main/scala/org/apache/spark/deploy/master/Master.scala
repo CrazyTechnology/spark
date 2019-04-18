@@ -132,7 +132,7 @@ private[deploy] class Master(
         "off the RestSubmissionServer with spark.master.rest.enabled=false, or do not use " +
         "authentication.")
   }
-
+  //启动spark的master节点
   override def onStart(): Unit = {
     logInfo("Starting Spark master at " + masterUrl)
     logInfo(s"Running Spark version ${org.apache.spark.SPARK_VERSION}")

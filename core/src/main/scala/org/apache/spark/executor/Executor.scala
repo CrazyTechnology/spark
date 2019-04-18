@@ -195,15 +195,17 @@ private[spark] class Executor(
   private var heartbeatFailures = 0
 
   startDriverHeartbeater()
-
+  //正在运行的task数量
   private[executor] def numRunningTasks: Int = runningTasks.size()
 
+  //运行task
   def launchTask(context: ExecutorBackend, taskDescription: TaskDescription): Unit = {
     val tr = new TaskRunner(context, taskDescription)
     runningTasks.put(taskDescription.taskId, tr)
     threadPool.execute(tr)
   }
 
+  //根据taskid kill 掉task
   def killTask(taskId: Long, interruptThread: Boolean, reason: String): Unit = {
     val taskRunner = runningTasks.get(taskId)
     if (taskRunner != null) {
@@ -268,6 +270,8 @@ private[spark] class Executor(
     ManagementFactory.getGarbageCollectorMXBeans.asScala.map(_.getCollectionTime).sum
   }
 
+
+  //taskrunner 继承java runnale接口
   class TaskRunner(
       execBackend: ExecutorBackend,
       private val taskDescription: TaskDescription)

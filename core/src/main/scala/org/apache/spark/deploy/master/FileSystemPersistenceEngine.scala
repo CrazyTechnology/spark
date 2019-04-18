@@ -40,10 +40,12 @@ private[master] class FileSystemPersistenceEngine(
 
   new File(dir).mkdir()
 
+  //序列化到文件中
   override def persist(name: String, obj: Object): Unit = {
     serializeIntoFile(new File(dir + File.separator + name), obj)
   }
 
+  //反序列化
   override def unpersist(name: String): Unit = {
     val f = new File(dir + File.separator + name)
     if (!f.delete()) {
@@ -71,7 +73,7 @@ private[master] class FileSystemPersistenceEngine(
       }
     }
   }
-
+  //从文件中反序列化
   private def deserializeFromFile[T](file: File)(implicit m: ClassTag[T]): T = {
     val fileIn = new FileInputStream(file)
     var in: DeserializationStream = null

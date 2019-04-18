@@ -49,16 +49,17 @@ import org.apache.spark.util.{CallSite, Utils}
 
 /**
  * The entry point to programming Spark with the Dataset and DataFrame API.
+  * 操作 DateSet和DateFrame 的程序入口
  *
  * In environments that this has been created upfront (e.g. REPL, notebooks), use the builder
  * to get an existing session:
- *
+ * 获取已经创建好的
  * {{{
  *   SparkSession.builder().getOrCreate()
  * }}}
  *
  * The builder can also be used to create a new session:
- *
+ *创建一个新的
  * {{{
  *   SparkSession.builder
  *     .master("local")

@@ -435,6 +435,7 @@ private[spark] class DAGScheduler(
 
   /**
    * Create a ResultStage associated with the provided jobId.
+    * 根据提供的jobid  创建ResultStage
    */
   private def createResultStage(
       rdd: RDD[_],
@@ -726,6 +727,7 @@ private[spark] class DAGScheduler(
     val start = System.nanoTime
     val waiter = submitJob(rdd, func, partitions, callSite, resultHandler, properties)
     ThreadUtils.awaitReady(waiter.completionFuture, Duration.Inf)
+    //下面判断job是否执行成功
     waiter.completionFuture.value.get match {
       case scala.util.Success(_) =>
         logInfo("Job %d finished: %s, took %f s".format
@@ -959,6 +961,7 @@ private[spark] class DAGScheduler(
     try {
       // New stage creation may throw an exception if, for example, jobs are run on a
       // HadoopRDD whose underlying HDFS files have been deleted.
+
       finalStage = createResultStage(finalRDD, func, partitions, jobId, callSite)
     } catch {
       case e: BarrierJobSlotsNumberCheckFailed =>

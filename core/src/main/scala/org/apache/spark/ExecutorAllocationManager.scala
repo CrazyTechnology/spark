@@ -34,7 +34,7 @@ import org.apache.spark.util.{Clock, SystemClock, ThreadUtils, Utils}
 
 /**
  * An agent that dynamically allocates and removes executors based on the workload.
- *
+ * 根据工作负载动态分配和删除执行程序的代理程序
  * The ExecutorAllocationManager maintains a moving target number of executors which is periodically
  * synced to the cluster manager. The target starts at a configured initial value and changes with
  * the number of pending and running tasks.
@@ -95,8 +95,10 @@ private[spark] class ExecutorAllocationManager(
   import ExecutorAllocationManager._
 
   // Lower and upper bounds on the number of executors.
+  //executor的最大和最小值
   private val minNumExecutors = conf.get(DYN_ALLOCATION_MIN_EXECUTORS)
   private val maxNumExecutors = conf.get(DYN_ALLOCATION_MAX_EXECUTORS)
+  //初始化executor的数量
   private val initialNumExecutors = Utils.getDynamicAllocationInitialExecutors(conf)
 
   // How long there must be backlogged tasks for before an addition is triggered (seconds)

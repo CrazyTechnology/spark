@@ -56,6 +56,7 @@ private[spark] class ApplicationInfo(
     init()
   }
 
+  //初始化状态、executor
   private def init() {
     state = ApplicationState.WAITING
     executors = new mutable.HashMap[Int, ExecutorDesc]
@@ -67,6 +68,7 @@ private[spark] class ApplicationInfo(
     executorLimit = desc.initialExecutorLimit.getOrElse(Integer.MAX_VALUE)
   }
 
+  //新生成一个id
   private def newExecutorId(useID: Option[Int] = None): Int = {
     useID match {
       case Some(id) =>
@@ -79,6 +81,7 @@ private[spark] class ApplicationInfo(
     }
   }
 
+  //添加executor
   private[master] def addExecutor(
       worker: WorkerInfo,
       cores: Int,

@@ -19,6 +19,19 @@ package org.apache.spark.deploy
 
 import java.net.URI
 
+/**
+  * 提交的程序信息描述
+  * @param name
+  * @param maxCores
+  * @param memoryPerExecutorMB
+  * @param command
+  * @param appUiUrl
+  * @param eventLogDir
+  * @param eventLogCodec
+  * @param coresPerExecutor
+  * @param initialExecutorLimit
+  * @param user
+  */
 private[spark] case class ApplicationDescription(
     name: String,
     maxCores: Option[Int],

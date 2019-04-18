@@ -115,7 +115,7 @@ class HistoryServer(
 
   /**
    * Initialize the history server.
-   *
+   * 初始化历史服务器
    * This starts a background thread that periodically synchronizes information displayed on
    * this UI with the event logs in the provided base directory.
    */

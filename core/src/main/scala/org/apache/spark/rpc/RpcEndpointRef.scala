@@ -59,6 +59,7 @@ private[spark] abstract class RpcEndpointRef(conf: SparkConf)
    * receive the reply within a default timeout.
    *
    * This method only sends the message once and never retries.
+    * 这个消息只发送一次
    */
   def ask[T: ClassTag](message: Any): Future[T] = ask(message, defaultAskTimeout)
 

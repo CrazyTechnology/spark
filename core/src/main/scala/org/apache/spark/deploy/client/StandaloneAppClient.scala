@@ -35,10 +35,9 @@ import org.apache.spark.util.{RpcUtils, ThreadUtils}
 
 /**
  * Interface allowing applications to speak with a Spark standalone cluster manager.
- *
+ * 接口允许应用程序和集群管理者通信
  * Takes a master URL, an app description, and a listener for cluster events, and calls
  * back the listener when various events occur.
- *
  * @param masterUrls Each url should look like spark://host:port.
  */
 private[spark] class StandaloneAppClient(
@@ -49,8 +48,10 @@ private[spark] class StandaloneAppClient(
     conf: SparkConf)
   extends Logging {
 
+  //master 地址
   private val masterRpcAddresses = masterUrls.map(RpcAddress.fromSparkURL(_))
 
+  //注册超时时间
   private val REGISTRATION_TIMEOUT_SECONDS = 20
   private val REGISTRATION_RETRIES = 3
 
@@ -87,6 +88,7 @@ private[spark] class StandaloneAppClient(
       } catch {
         case e: Exception =>
           logWarning("Failed to connect to master", e)
+          //断开连接
           markDisconnected()
           stop()
       }
