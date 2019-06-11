@@ -69,6 +69,7 @@ class StreamingContext private[streaming] (
 
   /**
    * Create a StreamingContext using an existing SparkContext.
+    * 通过使用存在的sparkcontext创建streamingContext
    * @param sparkContext existing SparkContext
    * @param batchDuration the time interval at which streaming data will be divided into batches
    */
