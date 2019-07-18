@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.spark.rdd
 
@@ -48,31 +32,39 @@ import org.apache.spark.util.random.{BernoulliCellSampler, BernoulliSampler, Poi
 
 /**
  * A Resilient Distributed Dataset (RDD), the basic abstraction in Spark. Represents an immutable,
- * partitioned collection of elements that can be operated on in parallel. This class contains the
- * basic operations available on all RDDs, such as `map`, `filter`, and `persist`. In addition,
- * [[org.apache.spark.rdd.PairRDDFunctions]] contains operations available only on RDDs of key-value
+ * partitioned collection of elements that can be operated on in parallel.
+  * RDD是弹性分布式数据集，spark最基础的抽象概念。是可以并行操作的多分区、不可变的集合
+  * This class contains the basic operations available on all RDDs, such as `map`, `filter`, and `persist`.
+  * 这个类里包含了RDD上所有的基本操作，包括map、filter、persist
+  * In addition, [[org.apache.spark.rdd.PairRDDFunctions]] contains operations available only on RDDs of key-value
  * pairs, such as `groupByKey` and `join`;
+  *  PairRddFunctions适合key-value格式的rdd，例如groupby和join操作。
  * [[org.apache.spark.rdd.DoubleRDDFunctions]] contains operations available only on RDDs of
  * Doubles; and
  * [[org.apache.spark.rdd.SequenceFileRDDFunctions]] contains operations available on RDDs that
  * can be saved as SequenceFiles.
  * All operations are automatically available on any RDD of the right type (e.g. RDD[(Int, Int)])
  * through implicit.
+  * 所有的操作都会自动的隐式转换
  *
  * Internally, each RDD is characterized by five main properties:
  *
- *  - A list of partitions
- *  - A function for computing each split
- *  - A list of dependencies on other RDDs
- *  - Optionally, a Partitioner for key-value RDDs (e.g. to say that the RDD is hash-partitioned)
+ *  - A list of partitions    多个分区
+ *  - A function for computing each split 每个分区都有一个计算函数
+ *  - A list of dependencies on other RDDs  血缘依赖
+ *  - Optionally, a Partitioner for key-value RDDs (e.g. to say that the RDD is hash-partitioned) 重新分区
  *  - Optionally, a list of preferred locations to compute each split on (e.g. block locations for
- *    an HDFS file)
+ *    an HDFS file)  最优计算位置
  *
  * All of the scheduling and execution in Spark is done based on these methods, allowing each RDD
- * to implement its own way of computing itself. Indeed, users can implement custom RDDs (e.g. for
- * reading data from a new storage system) by overriding these functions. Please refer to the
+ * to implement its own way of computing itself.
+  *spark中的所有调度和执行都是基于这写方法完成的，允许每个Rdd实现自己的计算方式。
+  *
+  * Indeed, users can implement custom RDDs (e.g. for reading data from a new storage system)
+  * by overriding these functions. Please refer to the
  * <a href="http://people.csail.mit.edu/matei/papers/2012/nsdi_spark.pdf">Spark paper</a>
  * for more details on RDD internals.
+  * 实际上用户可以自定义Rdd，继承serializable序列化接口，传入sparkcontext和dependency
  */
 abstract class RDD[T: ClassTag](
     @transient private var _sc: SparkContext,
@@ -82,9 +74,12 @@ abstract class RDD[T: ClassTag](
   if (classOf[RDD[_]].isAssignableFrom(elementClassTag.runtimeClass)) {
     // This is a warning instead of an exception in order to avoid breaking user programs that
     // might have defined nested RDDs without running jobs with them.
+    //spark 不支持嵌套的RDD
     logWarning("Spark does not support nested RDDs (see SPARK-5063)")
+
   }
 
+  //定义sc方法
   private def sc: SparkContext = {
     if (_sc == null) {
       throw new SparkException(
@@ -104,6 +99,7 @@ abstract class RDD[T: ClassTag](
   def this(@transient oneParent: RDD[_]) =
     this(oneParent.context, List(new OneToOneDependency(oneParent)))
 
+  //定义conf方法获取sparkconf
   private[spark] def conf = sc.conf
   // =======================================================================
   // Methods that should be implemented by subclasses of RDD
@@ -119,7 +115,7 @@ abstract class RDD[T: ClassTag](
   /**
    * Implemented by subclasses to return the set of partitions in this RDD. This method will only
    * be called once, so it is safe to implement a time-consuming computation in it.
-   *
+   * 返回Rdd中的分区
    * The partitions in this array must satisfy the following property:
    *   `rdd.partitions.zipWithIndex.forall { case (partition, index) => partition.index == index }`
    */
@@ -160,7 +156,7 @@ abstract class RDD[T: ClassTag](
 
   /**
    * Mark this RDD for persisting using the specified level.
-   *
+   * 根据指定的级别进行持久化
    * @param newLevel the target storage level
    * @param allowOverride whether to override any existing level with the new one
    */

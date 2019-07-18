@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.spark.sql
 
 import java.io.Closeable
@@ -74,6 +57,12 @@ import org.apache.spark.util.{CallSite, Utils}
  * @param parentSessionState If supplied, inherit all session state (i.e. temporary
  *                            views, SQL config, UDFs etc) from parent.
  */
+
+/**
+  * 准备知识：
+  *   @InterfaceStability.Stable  说明主版本是稳定的，不同主版本之间可能不兼容。
+  *   @transient 代表不进行序列化
+  */
 @InterfaceStability.Stable
 class SparkSession private(
     @transient val sparkContext: SparkContext,
@@ -636,7 +625,7 @@ class SparkSession private(
   /**
    * Executes a SQL query using Spark, returning the result as a `DataFrame`.
    * The dialect that is used for SQL parsing can be configured with 'spark.sql.dialect'.
-   * 使用spark执行查询语句，返回DataFrame结果集，可以配置sql的方言
+   * 使用spark执行sql查询语句，返回DataFrame结果集，可以配置sql的方言
    * @since 2.0.0
    */
   def sql(sqlText: String): DataFrame = {

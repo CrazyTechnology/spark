@@ -17,6 +17,7 @@
 
 package org.apache.spark
 
+//用来封装spark的错误信息
 class SparkException(message: String, cause: Throwable)
   extends Exception(message, cause) {
 

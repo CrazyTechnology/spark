@@ -61,27 +61,42 @@ import org.apache.spark.ui.{ConsoleProgressBar, SparkUI}
 import org.apache.spark.util._
 
 /**
+  * 准备知识：
+  * scala 中没有静态字段和静态方法，所以可以使用object来实现这些功能。
+  * object 不能提供构造器参数，所以必须是无参的。
+  * class sparkcontext和 object sparkcontext是伴生类和伴生对象。伴生类和伴生对象可以相互访问彼此的私有成员变量。
+  * def 定义的是方法
+  * val 定义的是变量
+  */
+
+
+
+/**
  * Main entry point for Spark functionality. A SparkContext represents the connection to a Spark
  * cluster, and can be used to create RDDs, accumulators and broadcast variables on that cluster.
- * 可以创建rdd，累加器、广播变量
+ * spark功能的的主要入口点，SparkContext代表着跟spark集群的连接。sparkcontext可以在集群上创建rdd，累加器、广播变量。
  * Only one SparkContext may be active per JVM.  You must `stop()` the active SparkContext before
+  * 每个jvm中只能有一个活跃的sparkcontext实例，如果想创建另一个就必须停止当前的活跃实例。
  * creating a new one.  This limitation may eventually be removed; see SPARK-2243 for more details.
- *
+ * 这个限制以后可能会被移除。
  * @param config a Spark Config object describing the application configuration. Any settings in
  *   this config overrides the default configs as well as system properties.
  */
 class SparkContext(config: SparkConf) extends Logging {
 
   // The call site where this SparkContext was constructed.
+  //构建此SparkContext的调用站点。
   private val creationSite: CallSite = Utils.getCallSite()
 
   // If true, log warnings instead of throwing exceptions when multiple SparkContexts are active
+  //是否允许多个sparkcontext，默认值为false
   private val allowMultipleContexts: Boolean =
     config.getBoolean("spark.driver.allowMultipleContexts", false)
 
   // In order to prevent multiple SparkContexts from being active at the same time, mark this
   // context as having started construction.
   // NOTE: this must be placed at the beginning of the SparkContext constructor.
+  //确保只有一个sparkcontext再运行中
   SparkContext.markPartiallyConstructed(this, allowMultipleContexts)
 
   //任务开始执行时间
@@ -89,6 +104,7 @@ class SparkContext(config: SparkConf) extends Logging {
 
   private[spark] val stopped: AtomicBoolean = new AtomicBoolean(false)
 
+  //判断sparkContext没有停止
   private[spark] def assertNotStopped(): Unit = {
     if (stopped.get()) {
       val activeContext = SparkContext.activeContext.get()
@@ -190,18 +206,25 @@ class SparkContext(config: SparkConf) extends Logging {
    | constructor is still running is safe.                                                 |
    * ------------------------------------------------------------------------------------- */
 
+  //spark配置文件对象
   private var _conf: SparkConf = _
+  //日志目录
   private var _eventLogDir: Option[URI] = None
   private var _eventLogCodec: Option[String] = None
   private var _listenerBus: LiveListenerBus = _
+  //spark运行环境对象
   private var _env: SparkEnv = _
   private var _statusTracker: SparkStatusTracker = _
   private var _progressBar: Option[ConsoleProgressBar] = None
   private var _ui: Option[SparkUI] = None
+  //hadoop的配置对象
   private var _hadoopConfiguration: Configuration = _
+  //executor执行内存大小
   private var _executorMemory: Int = _
+  //调度进程
   private var _schedulerBackend: SchedulerBackend = _
   private var _taskScheduler: TaskScheduler = _
+  //心跳机制
   private var _heartbeatReceiver: RpcEndpointRef = _
   @volatile private var _dagScheduler: DAGScheduler = _
   private var _applicationId: String = _
@@ -239,6 +262,7 @@ class SparkContext(config: SparkConf) extends Logging {
   private[spark] def eventLogDir: Option[URI] = _eventLogDir
   private[spark] def eventLogCodec: Option[String] = _eventLogCodec
 
+  //是否是本地模式
   def isLocal: Boolean = Utils.isLocalMaster(_conf)
 
   /**
@@ -2453,13 +2477,16 @@ class SparkContext(config: SparkConf) extends Logging {
 /**
  * The SparkContext object contains a number of implicit conversions and parameters for use with
  * various Spark features.
+  *SparkContext对象包含许多隐式转换和参数，可用于各种Spark功能。
  */
 object SparkContext extends Logging {
+  //日志级别
   private val VALID_LOG_LEVELS =
     Set("ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN")
 
   /**
    * Lock that guards access to global variables that track SparkContext construction.
+    * 锁定可以访问跟踪SparkContext构造的全局变量
    */
   private val SPARK_CONTEXT_CONSTRUCTOR_LOCK = new Object()
 
@@ -2481,7 +2508,7 @@ object SparkContext extends Logging {
 
   /**
    * Called to ensure that no other SparkContext is running in this JVM.
-   *
+   * 调用这个方法来确保没有别的sparkcontext运行在jvm中
    * Throws an exception if a running context is detected and logs a warning if another thread is
    * constructing a SparkContext.  This warning is necessary because the current locking scheme
    * prevents us from reliably distinguishing between cases where another context is being
@@ -2571,14 +2598,20 @@ object SparkContext extends Logging {
 
   /**
    * Called at the beginning of the SparkContext constructor to ensure that no SparkContext is
-   * running.  Throws an exception if a running context is detected and logs a warning if another
-   * thread is constructing a SparkContext.  This warning is necessary because the current locking
+   * running.
+    * 在SparkContext构造函数的开头调用，以确保没有SparkContext正在运行
+    * Throws an exception if a running context is detected and logs a warning if another
+   * thread is constructing a SparkContext.
+    * 如果检测到正在运行的上下文，则抛出异常，如果另一个线程正在构建SparkContext，则会发出警告。
+    * This warning is necessary because the current locking
    * scheme prevents us from reliably distinguishing between cases where another context is being
    * constructed and cases where another constructor threw an exception.
+    * 此警告是必要的，因为当前锁定方案阻止我们可靠地区分正在构造另一个上下文的情况和另一个构造函数引发异常的情况。
    */
   private[spark] def markPartiallyConstructed(
       sc: SparkContext,
       allowMultipleContexts: Boolean): Unit = {
+    //使用同步锁机制
     SPARK_CONTEXT_CONSTRUCTOR_LOCK.synchronized {
       assertNoOtherContextIsRunning(sc, allowMultipleContexts)
       contextBeingConstructed = Some(sc)
@@ -2727,6 +2760,7 @@ object SparkContext extends Logging {
   /**
    * Create a task scheduler based on a given master URL.
    * Return a 2-tuple of the scheduler backend and the task scheduler.
+    * 创建任务调度器返回（SchedulerBackend和TaskScheduler）
    */
   private def createTaskScheduler(
       sc: SparkContext,
@@ -2736,8 +2770,9 @@ object SparkContext extends Logging {
 
     // When running locally, don't try to re-execute tasks on failure.
     val MAX_LOCAL_TASK_FAILURES = 1
-
+    //master名字
     master match {
+        //本机模式
       case "local" =>
         val scheduler = new TaskSchedulerImpl(sc, MAX_LOCAL_TASK_FAILURES, isLocal = true)
         val backend = new LocalSchedulerBackend(sc.getConf, scheduler, 1)
@@ -2825,6 +2860,7 @@ object SparkContext extends Logging {
 
 /**
  * A collection of regexes for extracting information from the master string.
+  * 用于从主字符串中提取信息的正则表达式的集合。
  */
 private object SparkMasterRegex {
   // Regular expression used for local[N] and local[*] master formats

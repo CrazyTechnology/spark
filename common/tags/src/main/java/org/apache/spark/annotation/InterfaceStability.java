@@ -22,12 +22,15 @@ import java.lang.annotation.Documented;
 /**
  * Annotation to inform users of how much to rely on a particular package,
  * class or method not changing over time.
+ * 注释，告知用户依赖于特定包，类或方法不会随时间变化的程度。
  */
 public class InterfaceStability {
 
   /**
    * Stable APIs that retain source and binary compatibility within a major release.
-   * These interfaces can change from one major release to another major release
+   * 稳定的API，在主要版本中保留源代码和二进制兼容性
+   * These interfaces can change from one major release to another major
+   * 这些接口可以从一个主要版本更改为另一个主要版本
    * (e.g. from 1.0 to 2.0).
    */
   @Documented

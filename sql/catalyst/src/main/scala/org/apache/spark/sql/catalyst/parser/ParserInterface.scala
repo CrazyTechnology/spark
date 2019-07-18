@@ -25,7 +25,7 @@ import org.apache.spark.sql.types.{DataType, StructType}
 
 /**
  * Interface for a parser.
-  * 解析类的接口
+  * 解析sql类的接口
  */
 @DeveloperApi
 trait ParserInterface {

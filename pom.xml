@@ -2141,6 +2141,7 @@
                 Setting SPARK_DIST_CLASSPATH is a simple way to make sure any child processes
                 launched by the tests have access to the correct test-time classpath.
               -->
+              <!--suppress UnresolvedMavenProperty -->
               <SPARK_DIST_CLASSPATH>${test_classpath}</SPARK_DIST_CLASSPATH>
               <SPARK_PREPEND_CLASSES>1</SPARK_PREPEND_CLASSES>
               <SPARK_SCALA_VERSION>${scala.binary.version}</SPARK_SCALA_VERSION>
@@ -2510,30 +2511,30 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>org.scalastyle</groupId>
-        <artifactId>scalastyle-maven-plugin</artifactId>
-        <version>1.0.0</version>
-        <configuration>
-          <verbose>false</verbose>
-          <failOnViolation>true</failOnViolation>
-          <includeTestSourceDirectory>false</includeTestSourceDirectory>
-          <failOnWarning>false</failOnWarning>
-          <sourceDirectory>${basedir}/src/main/scala</sourceDirectory>
-          <testSourceDirectory>${basedir}/src/test/scala</testSourceDirectory>
-          <configLocation>scalastyle-config.xml</configLocation>
-          <outputFile>${basedir}/target/scalastyle-output.xml</outputFile>
-          <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
-          <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+      <!--<plugin>-->
+        <!--<groupId>org.scalastyle</groupId>-->
+        <!--<artifactId>scalastyle-maven-plugin</artifactId>-->
+        <!--<version>1.0.0</version>-->
+        <!--<configuration>-->
+          <!--<verbose>false</verbose>-->
+          <!--<failOnViolation>true</failOnViolation>-->
+          <!--<includeTestSourceDirectory>false</includeTestSourceDirectory>-->
+          <!--<failOnWarning>false</failOnWarning>-->
+          <!--<sourceDirectory>${basedir}/src/main/scala</sourceDirectory>-->
+          <!--<testSourceDirectory>${basedir}/src/test/scala</testSourceDirectory>-->
+          <!--<configLocation>scalastyle-config.xml</configLocation>-->
+          <!--<outputFile>${basedir}/target/scalastyle-output.xml</outputFile>-->
+          <!--<inputEncoding>${project.build.sourceEncoding}</inputEncoding>-->
+          <!--<outputEncoding>${project.reporting.outputEncoding}</outputEncoding>-->
+        <!--</configuration>-->
+        <!--<executions>-->
+          <!--<execution>-->
+            <!--<goals>-->
+              <!--<goal>check</goal>-->
+            <!--</goals>-->
+          <!--</execution>-->
+        <!--</executions>-->
+      <!--</plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>

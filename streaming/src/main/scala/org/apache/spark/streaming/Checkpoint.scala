@@ -84,12 +84,14 @@ object Checkpoint extends Logging {
   val PREFIX = "checkpoint-"
   val REGEX = (PREFIX + """([\d]+)([\w\.]*)""").r
 
-  /** Get the checkpoint file for the given checkpoint time */
+  /** Get the checkpoint file for the given checkpoint time
+    * 根据传入的时间生成文件名然后获取文件 */
   def checkpointFile(checkpointDir: String, checkpointTime: Time): Path = {
     new Path(checkpointDir, PREFIX + checkpointTime.milliseconds)
   }
 
-  /** Get the checkpoint backup file for the given checkpoint time */
+  /** Get the checkpoint backup file for the given checkpoint time
+    * 获取checkpoint的备份文件*/
   def checkpointBackupFile(checkpointDir: String, checkpointTime: Time): Path = {
     new Path(checkpointDir, PREFIX + checkpointTime.milliseconds + ".bk")
   }

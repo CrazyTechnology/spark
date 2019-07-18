@@ -38,6 +38,7 @@ import org.apache.spark.util.{AccumulatorV2, SystemClock, ThreadUtils, Utils}
 
 /**
  * Schedules tasks for multiple types of clusters by acting through a SchedulerBackend.
+  * 通过SchedulerBackend执行多种类型群集的计划任务。
  * It can also work with a local setup by using a `LocalSchedulerBackend` and setting
  * isLocal to true. It handles common logic, like determining a scheduling order across jobs, waking
  * up to launch speculative tasks, etc.
@@ -174,6 +175,7 @@ private[spark] class TaskSchedulerImpl(
           s"$schedulingMode")
       }
     }
+    //创建任务调度池
     schedulableBuilder.buildPools()
   }
 

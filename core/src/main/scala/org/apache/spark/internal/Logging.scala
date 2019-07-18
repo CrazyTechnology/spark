@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.spark.internal
 
 import org.apache.log4j.{Level, LogManager, PropertyConfigurator}
@@ -28,6 +11,13 @@ import org.apache.spark.util.Utils
  * logging messages at different levels using methods that only evaluate parameters lazily if the
  * log level is enabled.
  */
+
+/**
+  * 父trait里无函数体的函数，子类必须override
+  * 重写父类里有函数体的函数，必须有关键词override
+  * trait里的变量，都是val类型
+  * 在trait里定义的的变量，必须是val类型，如果变量没初始化，子类必须override
+  */
 trait Logging {
 
   // Make the log field transient so that objects with Logging can
