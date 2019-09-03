@@ -279,6 +279,7 @@ class SparkContext(config: SparkConf) extends Logging {
   private[spark] val addedJars = new ConcurrentHashMap[String, Long]().asScala
 
   // Keeps track of all persisted RDDs
+  //追踪所有的持久化的RDD
   private[spark] val persistentRdds = {
     val map: ConcurrentMap[Int, RDD[_]] = new MapMaker().weakValues().makeMap[Int, RDD[_]]()
     map.asScala
@@ -310,13 +311,14 @@ class SparkContext(config: SparkConf) extends Logging {
   private[spark] val executorEnvs = HashMap[String, String]()
 
   // Set SPARK_USER for user who is running SparkContext.
-  //设置spark的用户
+  //获取当前spark的用户
   val sparkUser = Utils.getCurrentUserName()
 
   //后台调度进程
   private[spark] def schedulerBackend: SchedulerBackend = _schedulerBackend
   //任务调度器
   private[spark] def taskScheduler: TaskScheduler = _taskScheduler
+  //给taskscheduler赋值
   private[spark] def taskScheduler_=(ts: TaskScheduler): Unit = {
     _taskScheduler = ts
   }
@@ -334,6 +336,7 @@ class SparkContext(config: SparkConf) extends Logging {
    *  in case of YARN something like 'application_1433865536131_34483'
    *  in case of MESOS something like 'driver-20170926223339-0001'
    * )
+    * 运行程序的id
    */
   def applicationId: String = _applicationId
   def applicationAttemptId: Option[String] = _applicationAttemptId
@@ -385,6 +388,7 @@ class SparkContext(config: SparkConf) extends Logging {
   }
 
   try {
+    //下面的代码是初始化sparkcontext重要组件
     _conf = config.clone()
     _conf.validateSettings()
 
@@ -465,6 +469,7 @@ class SparkContext(config: SparkConf) extends Logging {
 
     _ui =
       if (conf.getBoolean("spark.ui.enabled", true)) {
+        //实例化SparkUI对象
         Some(SparkUI.create(Some(this), _statusStore, _conf, _env.securityManager, appName, "",
           startTime))
       } else {
@@ -486,6 +491,7 @@ class SparkContext(config: SparkConf) extends Logging {
       files.foreach(addFile)
     }
 
+    //从参数配置中获取设置的executor的内存大小，默认为1024Mb
     _executorMemory = _conf.getOption("spark.executor.memory")
       .orElse(Option(System.getenv("SPARK_EXECUTOR_MEMORY")))
       .orElse(Option(System.getenv("SPARK_MEM"))
@@ -510,10 +516,12 @@ class SparkContext(config: SparkConf) extends Logging {
 
     // We need to register "HeartbeatReceiver" before "createTaskScheduler" because Executor will
     // retrieve "HeartbeatReceiver" in the constructor. (SPARK-6640)
+    //注册心跳接收器
     _heartbeatReceiver = env.rpcEnv.setupEndpoint(
       HeartbeatReceiver.ENDPOINT_NAME, new HeartbeatReceiver(this))
 
     // Create and start the scheduler
+    //实例化taskscheduler
     val (sched, ts) = SparkContext.createTaskScheduler(this, master, deployMode)
     _schedulerBackend = sched
     _taskScheduler = ts

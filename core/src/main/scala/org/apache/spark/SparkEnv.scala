@@ -154,6 +154,7 @@ object SparkEnv extends Logging {
 
   /**
    * Create a SparkEnv for the driver.
+    * 创建driver的运行环境
    */
   private[spark] def createDriverEnv(
       conf: SparkConf,
