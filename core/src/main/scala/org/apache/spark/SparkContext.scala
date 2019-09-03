@@ -52,9 +52,6 @@ import org.apache.spark.util._
   * def 定义的是方法
   * val 定义的是变量
   */
-
-
-
 /**
  * Main entry point for Spark functionality. A SparkContext represents the connection to a Spark
  * cluster, and can be used to create RDDs, accumulators and broadcast variables on that cluster.
@@ -134,7 +131,7 @@ class SparkContext(config: SparkConf) extends Logging {
    * @param appName A name for your application, to display on the cluster web UI.
    * @param sparkHome Location where Spark is installed on cluster nodes.
    * @param jars Collection of JARs to send to the cluster. These can be paths on the local file
-   *             system or HDFS, HTTP, HTTPS, or FTP URLs.
+   *             system or HDFS, HTTP, HTTPS, or FTP URLs.  可以是一个路径
    * @param environment Environment variables to set on worker nodes.
    */
   def this(
@@ -187,7 +184,7 @@ class SparkContext(config: SparkConf) extends Logging {
    | Private variables. These variables keep the internal state of the context, and are    |
    | not accessible by the outside world. They're mutable since we want to initialize all  |
    | of them to some neutral value ahead of time, so that calling "stop()" while the       |
-   | constructor is still running is safe.                                                 |
+   | constructor is still running is safe.     全都是私有变量外部不能访问                                            |
    * ------------------------------------------------------------------------------------- */
 
   //spark配置文件对象
@@ -195,11 +192,15 @@ class SparkContext(config: SparkConf) extends Logging {
   //日志目录
   private var _eventLogDir: Option[URI] = None
   private var _eventLogCodec: Option[String] = None
+  //监听总线
   private var _listenerBus: LiveListenerBus = _
   //spark运行环境对象
   private var _env: SparkEnv = _
+  //spark状态追踪
   private var _statusTracker: SparkStatusTracker = _
+  //客户端进度
   private var _progressBar: Option[ConsoleProgressBar] = None
+  //spark Ui界面
   private var _ui: Option[SparkUI] = None
   //hadoop的配置对象
   private var _hadoopConfiguration: Configuration = _
@@ -207,6 +208,7 @@ class SparkContext(config: SparkConf) extends Logging {
   private var _executorMemory: Int = _
   //调度进程
   private var _schedulerBackend: SchedulerBackend = _
+  //任务调度进程
   private var _taskScheduler: TaskScheduler = _
   //心跳机制
   private var _heartbeatReceiver: RpcEndpointRef = _
@@ -232,6 +234,7 @@ class SparkContext(config: SparkConf) extends Logging {
   /**
    * Return a copy of this SparkContext's configuration. The configuration ''cannot'' be
    * changed at runtime.
+   * sparkconf 在运行时不能修改
    */
   def getConf: SparkConf = conf.clone()
 
@@ -239,7 +242,9 @@ class SparkContext(config: SparkConf) extends Logging {
   def files: Seq[String] = _files
   //获取master地址
   def master: String = _conf.get("spark.master")
+  //默认是client模式
   def deployMode: String = _conf.getOption("spark.submit.deployMode").getOrElse("client")
+  //获取程序的名字
   def appName: String = _conf.get("spark.app.name")
 
   private[spark] def isEventLogEnabled: Boolean = _conf.getBoolean("spark.eventLog.enabled", false)
@@ -1422,7 +1427,7 @@ class SparkContext(config: SparkConf) extends Logging {
 
   /**
    * Register the given accumulator.
-   *
+   * 注册累加器
    * @note Accumulators must be registered before use, or it will throw exception.
    */
   def register(acc: AccumulatorV2[_, _]): Unit = {
