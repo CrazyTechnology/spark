@@ -36,7 +36,7 @@ import org.apache.spark.sql.types.StructType
 /**
  * Interface used to load a [[Dataset]] from external storage systems (e.g. file systems,
  * key-value stores, etc). Use `SparkSession.read` to access this.
- *
+ *  用于从外部存储系统（例如文件系统、key-value格式的存储）加载[[Dataset]]的接口。使用SparkSession.read 来调用
  * @since 1.4.0
  */
 @InterfaceStability.Stable
@@ -138,7 +138,7 @@ class DataFrameReader private[sql](sparkSession: SparkSession) extends Logging {
   /**
    * Loads input in as a `DataFrame`, for data sources that support multiple paths.
    * Only works if the source is a HadoopFsRelationProvider.
-   *
+   * 加载数据，支持多个数据源路径
    * @since 1.6.0
    */
   @scala.annotation.varargs
@@ -243,7 +243,7 @@ class DataFrameReader private[sql](sparkSession: SparkSession) extends Logging {
    * Loads a JSON file (<a href="http://jsonlines.org/">JSON Lines text format or
    * newline-delimited JSON</a>) and returns the result as a `DataFrame`.
    * See the documentation on the overloaded `json()` method with varargs for more details.
-   *
+   * 加载json文件，然后返回DataFrame
    * @since 1.4.0
    */
   def json(path: String): DataFrame = {

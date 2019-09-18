@@ -23,6 +23,7 @@ import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan
 
 /**
  * Interface for a parser.
+ * 解析器的接口
  */
 trait ParserInterface {
   /** Creates LogicalPlan for a given SQL string. */
