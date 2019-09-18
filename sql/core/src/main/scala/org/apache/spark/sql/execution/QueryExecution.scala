@@ -35,9 +35,9 @@ import org.apache.spark.util.Utils
 /**
  * The primary workflow for executing relational queries using Spark.  Designed to allow easy
  * access to the intermediate phases of query execution for developers.
- *
- * While this is not a public class, we should avoid changing the function names for the sake of
- * changing them, because a lot of developers use the feature for debugging.
+ *使用Spark执行关系查询的主要工作流程。旨在允许开发人员轻松访问查询执行的中间阶段。
+ * QueryExecution类中的成员都是lazy的，被调用时才会执行。只有等到程序中出现action算子时，
+ * 才会调用 queryExecution类中的executedPlan成员，原先生成的逻辑执行计划才会被优化器优化，并转换成物理执行计划真正的被系统调用执行。
  */
 class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
 
@@ -63,7 +63,7 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
       UnsupportedOperationChecker.checkForBatch(analyzed)
     }
   }
-
+  //将为解析的逻辑计划转为以ing解析逻辑计划
   lazy val analyzed: LogicalPlan = {
     SparkSession.setActiveSession(sparkSession)
     sparkSession.sessionState.analyzer.execute(logical)
@@ -74,9 +74,9 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
     assertSupported()
     sparkSession.sharedState.cacheManager.useCachedData(analyzed)
   }
-
+  //优化执行计划
   lazy val optimizedPlan: LogicalPlan = sparkSession.sessionState.optimizer.execute(withCachedData)
-
+  //将逻辑计划转变为物理计划
   lazy val sparkPlan: SparkPlan = {
     SparkSession.setActiveSession(sparkSession)
     // TODO: We use next(), i.e. take the first plan returned by the planner, here for now,
