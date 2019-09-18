@@ -42,8 +42,7 @@ object SparkSQLExample {
     // $example on:init_session$
     val spark = SparkSession
       .builder()
-      .appName("Spark SQL basic example")
-      .config("spark.some.config.option", "some-value")
+      .appName("Spark SQL basic example").master("local[*]")
       .getOrCreate()
 
     // For implicit conversions like converting RDDs to DataFrames
