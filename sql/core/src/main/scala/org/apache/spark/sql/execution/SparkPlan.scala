@@ -70,11 +70,13 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
 
   /**
    * Return all metadata that describes more details of this SparkPlan.
+   * 返回SparkPlan的原数据描述信息
    */
   def metadata: Map[String, String] = Map.empty
 
   /**
    * Return all metrics containing metrics of this SparkPlan.
+   * 返回sparkplan的metrics信息
    */
   def metrics: Map[String, SQLMetric] = Map.empty
 

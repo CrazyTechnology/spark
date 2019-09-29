@@ -51,23 +51,17 @@ import org.apache.spark.util.Utils
 
 /**
  * The entry point to programming Spark with the Dataset and DataFrame API.
+ * spark 操作Dataset和DataFrame的程序入口
  *
- * In environments that this has been created upfront (e.g. REPL, notebooks), use the builder
- * to get an existing session:
- *
- * {{{
+ * 创建方式：
+ * 1.
  *   SparkSession.builder().getOrCreate()
- * }}}
- *
- * The builder can also be used to create a new session:
- *
- * {{{
+ * 2.
  *   SparkSession.builder()
  *     .master("local")
  *     .appName("Word Count")
  *     .config("spark.some.config.option", "some-value")
  *     .getOrCreate()
- * }}}
  */
 @InterfaceStability.Stable
 class SparkSession private(
@@ -83,8 +77,7 @@ class SparkSession private(
 
   /**
    * The version of Spark on which this application is running.
-   *
-   * @since 2.0.0
+   * spark 运行的版本号
    */
   def version: String = SPARK_VERSION
 
@@ -744,7 +737,7 @@ object SparkSession {
     /**
      * Sets a name for the application, which will be shown in the Spark web UI.
      * If no application name is set, a randomly generated name will be used.
-     *
+     * 设置应用程序的名字，在spark Web UI上显示。如果没有手动设置，会自动生成一个。
      * @since 2.0.0
      */
     def appName(name: String): Builder = config("spark.app.name", name)
@@ -830,20 +823,23 @@ object SparkSession {
     /**
      * Gets an existing [[SparkSession]] or, if there is no existing one, creates a new
      * one based on the options set in this builder.
-     *
+     * 获取已经存在的sparksession或者创建一个新的sparkSession
      * This method first checks whether there is a valid thread-local SparkSession,
      * and if yes, return that one. It then checks whether there is a valid global
      * default SparkSession, and if yes, return that one. If no valid global default
      * SparkSession exists, the method creates a new SparkSession and assigns the
      * newly created SparkSession as the global default.
-     *
+     *他的方法首先检查是否存在有效的线程本地SparkSession，如果是，则返回该线程。然后，它检查是否存在有效的全局默认SparkSession，如果是，则返回该默认值。
+     * 如果不存在有效的全局默认SparkSession，则该方法将创建一个新的SparkSession并将新创建的SparkSession分配为全局默认值。
      * In case an existing SparkSession is returned, the config options specified in
      * this builder will be applied to the existing SparkSession.
+     * 如果返回现有的SparkSession，则在中指定的配置选项此构建器将应用于现有的SparkSession。
      *
      * @since 2.0.0
      */
     def getOrCreate(): SparkSession = synchronized {
       // Get the session from current thread's active session.
+      //从ThreadLocal中获取session
       var session = activeThreadSession.get()
       if ((session ne null) && !session.sparkContext.isStopped) {
         options.foreach { case (k, v) => session.sessionState.conf.setConfString(k, v) }
@@ -856,6 +852,7 @@ object SparkSession {
       // Global synchronization so we will only set the default session once.
       SparkSession.synchronized {
         // If the current thread does not have an active session, get it from the global session.
+        //如果当前线程中没有session就从全局获取
         session = defaultSession.get()
         if ((session ne null) && !session.sparkContext.isStopped) {
           options.foreach { case (k, v) => session.sessionState.conf.setConfString(k, v) }
@@ -866,8 +863,10 @@ object SparkSession {
         }
 
         // No active nor global default session. Create a new one.
+        //当前线程和全局都没有获取到的话就重新实例化一个。
+        //首先实例化sparkContext
         val sparkContext = userSuppliedContext.getOrElse {
-          // set app name if not given
+          // 随机生成appName
           val randomAppName = java.util.UUID.randomUUID().toString
           val sparkConf = new SparkConf()
           options.foreach { case (k, v) => sparkConf.set(k, v) }
@@ -883,8 +882,10 @@ object SparkSession {
           }
           sc
         }
+        //再次实例化sparksession
         session = new SparkSession(sparkContext)
         options.foreach { case (k, v) => session.initialSessionOptions.put(k, v) }
+        //将sparksesion放入全局session中
         defaultSession.set(session)
 
         // Register a successfully instantiated context to the singleton. This should be at the
@@ -904,7 +905,7 @@ object SparkSession {
 
   /**
    * Creates a [[SparkSession.Builder]] for constructing a [[SparkSession]].
-   *
+   *创建一个用于构造[[SparkSession]]的[[SparkSession.Builder]]。
    * @since 2.0.0
    */
   def builder(): Builder = new Builder
@@ -959,7 +960,8 @@ object SparkSession {
   // Private methods from now on
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  /** The active SparkSession for the current thread. */
+  /** The active SparkSession for the current thread.
+   * 当前线程的活动SparkSession。 */
   private val activeThreadSession = new InheritableThreadLocal[SparkSession]
 
   /** Reference to the root SparkSession. */

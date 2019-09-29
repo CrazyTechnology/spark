@@ -19,6 +19,7 @@ package org.apache.spark
 
 /**
  * Spark's broadcast variables, used to broadcast immutable datasets to all nodes.
+ * spark的广播变量，对所有的节点广播不可变的数据集
  */
 package object broadcast {
   // For package docs only

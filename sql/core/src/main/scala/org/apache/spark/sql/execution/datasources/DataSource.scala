@@ -47,18 +47,24 @@ import org.apache.spark.util.Utils
  * acting as the canonical set of parameters that can describe a Data Source, this class is used to
  * resolve a description to a concrete implementation that can be used in a query plan
  * (either batch or streaming) or to write out data using an external library.
- *
+ * 负责在Spark SQL中表示可插拔数据源的主类。除了充当可描述数据源的规范参数集之外，此类还用于将描述解析为可在查询计划（批处理或流式处理）中使用的具体实现，或使用
+ * 外部库。
  * From an end user's perspective a DataSource description can be created explicitly using
  * [[org.apache.spark.sql.DataFrameReader]] or CREATE TABLE USING DDL.  Additionally, this class is
  * used when resolving a description from a metastore to a concrete implementation.
+ * 从最终用户的角度来看，可以使用[[org.apache.spark.sql.DataFrameReader]]或使用DDL创建表来显式创建数据源描述。
+ * 此外，在将描述从元存储区解析为具体实现时，将使用此类。
  *
  * Many of the arguments to this class are optional, though depending on the specific API being used
  * these optional arguments might be filled in during resolution using either inference or external
  * metadata.  For example, when reading a partitioned table from a file system, partition columns
  * will be inferred from the directory layout even if they are not specified.
+ * 此类的许多参数都是可选的，尽管取决于所使用的特定API，这些可选参数可能在解析过程中使用推断或外部元数据填充。
+ * 例如，当从文件系统中读取分区表时，即使未指定分区列，也会从目录布局中推断出分区列。
  *
  * @param paths A list of file system paths that hold data.  These will be globbed before and
  *              qualified. This option only works when reading from a [[FileFormat]].
+ *              保存数据的文件系统路径的列表。
  * @param userSpecifiedSchema An optional specification of the schema of the data. When present
  *                            we skip attempting to infer the schema.
  * @param partitionColumns A list of column names that the relation is partitioned by. This list is
@@ -68,8 +74,10 @@ import org.apache.spark.util.Utils
  *                         partitioning. In other cases, if this list is empty, then this table
  *                         is unpartitioned.
  * @param bucketSpec An optional specification for bucketing (hash-partitioning) of the data.
+ *                   数据的存储（哈希分区）的可选规范。
  * @param catalogTable Optional catalog table reference that can be used to push down operations
  *                     over the datasource to the catalog service.
+ *                     在数据源上传递到目录服务。
  */
 case class DataSource(
     sparkSession: SparkSession,
