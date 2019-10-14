@@ -29,6 +29,7 @@ abstract class QueryPlan[PlanType <: QueryPlan[PlanType]] extends TreeNode[PlanT
   /**
    * Extracts the relevant constraints from a given set of constraints based on the attributes that
    * appear in the [[outputSet]].
+   * 获取相关约束
    */
   protected def getRelevantConstraints(constraints: Set[Expression]): Set[Expression] = {
     constraints

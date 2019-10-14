@@ -31,8 +31,9 @@ object SQLDataSourceExample {
       .config("spark.some.config.option", "some-value")
       .getOrCreate()
 
-    runBasicDataSourceExample(spark)
+
     runBasicParquetExample(spark)
+    runBasicDataSourceExample(spark)
     runParquetSchemaMergingExample(spark)
     runJsonDatasetExample(spark)
     runJdbcDatasetExample(spark)

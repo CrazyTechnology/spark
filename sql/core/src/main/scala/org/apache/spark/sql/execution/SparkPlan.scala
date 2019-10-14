@@ -38,8 +38,9 @@ import org.apache.spark.util.ThreadUtils
 
 /**
  * The base class for physical operators.
- *
+ * 物理操作的基类
  * The naming convention is that physical operators end with "Exec" suffix, e.g. [[ProjectExec]].
+ * 物理操作的后缀名称以Exec结尾
  */
 abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializable {
 
@@ -47,6 +48,8 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
    * A handle to the SQL Context that was used to create this plan.   Since many operators need
    * access to the sqlContext for RDD operations or configuration this field is automatically
    * populated by the query planning infrastructure.
+   * 用于创建此计划的SQL上下文的句柄。
+   * 由于许多操作员需要访问sqlContext才能进行RDD操作或配置，因此该字段由查询计划基础结构自动填充。
    */
   @transient
   final val sqlContext = SparkSession.getActiveSession.map(_.sqlContext).orNull
