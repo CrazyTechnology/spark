@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.spark.broadcast
 
@@ -34,23 +18,15 @@ import org.apache.spark.util.{ByteBufferInputStream, Utils}
 import org.apache.spark.util.io.{ChunkedByteBuffer, ChunkedByteBufferOutputStream}
 
 /**
- * A BitTorrent-like implementation of [[org.apache.spark.broadcast.Broadcast]].
+ *工作原理如下：
+ * Driver将序列化的对象分成若干个小块，并将这些数据库块储在Driver的BlockManager中。
+
+ *Executor首先尝试从自己的BlockManager中获取数据对象，如果不存在就远程从Driver中或者其他正在运行的Executor中获取。
+ * 如果从其他地方获取到了数据块就保存到自己的BlockManager中用来提供给其他Executor获取数据
  *
- * The mechanism is as follows:
- *
- * The driver divides the serialized object into small chunks and
- * stores those chunks in the BlockManager of the driver.
- *
- * On each executor, the executor first attempts to fetch the object from its BlockManager. If
- * it does not exist, it then uses remote fetches to fetch the small chunks from the driver and/or
- * other executors if available. Once it gets the chunks, it puts the chunks in its own
- * BlockManager, ready for other executors to fetch from.
- *
- * This prevents the driver from being the bottleneck in sending out multiple copies of the
- * broadcast data (one per executor).
- *
- * When initialized, TorrentBroadcast objects read SparkEnv.get.conf.
- *
+ * 这样可以防止Driver成为发送广播数据的多个副本（每个执行程序一个）的瓶颈。
+
+ *初始化后，TorrentBroadcast对象读取SparkEnv.get.conf。
  * @param obj object to broadcast
  * @param id A unique identifier for the broadcast variable.
  */
@@ -65,7 +41,8 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
    */
   @transient private lazy val _value: T = readBroadcastBlock()
 
-  /** The compression codec to use, or None if compression is disabled */
+  /** The compression codec to use, or None if compression is disabled
+   * 是否使用压缩 */
   @transient private var compressionCodec: Option[CompressionCodec] = _
   /** Size of each block. Default value is 4MB.  This value is only read by the broadcaster. */
   @transient private var blockSize: Int = _
@@ -84,7 +61,7 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
 
   private val broadcastId = BroadcastBlockId(id)
 
-  /** Total number of blocks this broadcast variable contains. */
+  /** Total number of blocks this broadcast variable contains. 获取当前广播变量中block的数量 */
   private val numBlocks: Int = writeBlocks(obj)
 
   /** Whether to generate checksum for blocks or not. */
@@ -110,14 +87,17 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
 
   /**
    * Divide the object into multiple blocks and put those blocks in the block manager.
-   *
-   * @param value the object to divide
-   * @return number of blocks this broadcast variable is divided into
+   * 将对象且分成多个block 然后将这些block放入到block manager中
+   * @param value the object to divide  需要切分的数据
+   * @return number of blocks this broadcast variable is divided into  需要切分成的数量
    */
   private def writeBlocks(value: T): Int = {
     import StorageLevel._
     // Store a copy of the broadcast variable in the driver so that tasks run on the driver
     // do not create a duplicate copy of the broadcast variable's value.
+    //在driver上保存一份数据这样运行在driver上的taks就不会重复考本数据变量
+
+    //获取blockmanager对象
     val blockManager = SparkEnv.get.blockManager
     if (!blockManager.putSingle(broadcastId, value, MEMORY_AND_DISK, tellMaster = false)) {
       throw new SparkException(s"Failed to store $broadcastId in BlockManager")
@@ -140,25 +120,28 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
     blocks.length
   }
 
-  /** Fetch torrent blocks from the driver and/or other executors. */
+  /** Fetch torrent blocks from the driver and/or other executors.
+   * 从driver或者executor上获取数据块*/
   private def readBlocks(): Array[ChunkedByteBuffer] = {
     // Fetch chunks of data. Note that all these chunks are stored in the BlockManager and reported
     // to the driver, so other executors can pull these chunks from this executor as well.
     val blocks = new Array[ChunkedByteBuffer](numBlocks)
+
+    //获取blockManager对象
     val bm = SparkEnv.get.blockManager
 
     for (pid <- Random.shuffle(Seq.range(0, numBlocks))) {
       val pieceId = BroadcastBlockId(id, "piece" + pid)
       logDebug(s"Reading piece $pieceId of $broadcastId")
-      // First try getLocalBytes because there is a chance that previous attempts to fetch the
-      // broadcast blocks have already fetched some of the blocks. In that case, some blocks
-      // would be available locally (on this executor).
+
+      //先从本地获取数据，本地获取不到再远程获取数据
       bm.getLocalBytes(pieceId) match {
         case Some(block) =>
           blocks(pid) = block
           releaseLock(pieceId)
         case None =>
           bm.getRemoteBytes(pieceId) match {
+              //远程获取数据
             case Some(b) =>
               if (checksumEnabled) {
                 val sum = calcChecksum(b.chunks(0))
@@ -167,8 +150,7 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
                     s" $sum != ${checksums(pid)}")
                 }
               }
-              // We found the block from remote executors/driver's BlockManager, so put the block
-              // in this executor's BlockManager.
+              //将远程获取的数据存储到本地executor的blockmanager中
               if (!bm.putBytes(pieceId, b, StorageLevel.MEMORY_AND_DISK_SER, tellMaster = true)) {
                 throw new SparkException(
                   s"Failed to store $pieceId of $broadcastId in local BlockManager")
