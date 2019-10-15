@@ -1402,8 +1402,10 @@ class SparkContext(config: SparkConf) extends Logging {
    * Broadcast a read-only variable to the cluster, returning a
    * [[org.apache.spark.broadcast.Broadcast]] object for reading it in distributed functions.
    * The variable will be sent to each cluster only once.
+   * 向集群广播一个只读变量，返回一个Broadcast对象，以便在分布式函数中读取它。该变量将仅发送到每个群集一次。
    */
   def broadcast[T: ClassTag](value: T): Broadcast[T] = {
+    //先判断sparkcontext是否还处于活跃状态
     assertNotStopped()
     require(!classOf[RDD[_]].isAssignableFrom(classTag[T].runtimeClass),
       "Can not directly broadcast RDDs; instead, call collect() and broadcast the result.")
