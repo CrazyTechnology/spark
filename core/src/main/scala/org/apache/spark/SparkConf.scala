@@ -19,19 +19,18 @@ package org.apache.spark
 
 import java.util.concurrent.ConcurrentHashMap
 
-import scala.collection.JavaConverters._
-import scala.collection.mutable.LinkedHashSet
-
 import org.apache.avro.{Schema, SchemaNormalization}
-
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config._
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.util.Utils
 
+import scala.collection.JavaConverters._
+import scala.collection.mutable.LinkedHashSet
+
 /**
  * Configuration for a Spark application. Used to set various Spark parameters as key-value pairs.
- *
+ * 相当于spark 应用程序的操作面板，可以以key-value的形式设置运行的参数。
  * Most of the time, you would create a SparkConf object with `new SparkConf()`, which will load
  * values from any `spark.*` Java system properties set in your application as well. In this case,
  * parameters you set directly on the `SparkConf` object take priority over system properties.
@@ -43,9 +42,9 @@ import org.apache.spark.util.Utils
  * `new SparkConf().setMaster("local").setAppName("My app")`.
  *
  * @param loadDefaults whether to also load values from Java system properties
- *
  * @note Once a SparkConf object is passed to Spark, it is cloned and can no longer be modified
- * by the user. Spark does not support modifying the configuration at runtime.
+ *       by the user. Spark does not support modifying the configuration at runtime.
+ *       一旦程序开始运行了参数就不支持修改了。
  */
 class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Serializable {
 

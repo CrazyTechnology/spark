@@ -19,28 +19,19 @@ package org.apache.spark
 
 import java.io._
 import java.lang.reflect.Constructor
-import java.net.{URI}
-import java.util.{Arrays, Locale, Properties, ServiceLoader, UUID}
-import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap}
+import java.net.URI
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger, AtomicReference}
-
-import scala.collection.JavaConverters._
-import scala.collection.Map
-import scala.collection.generic.Growable
-import scala.collection.mutable.HashMap
-import scala.language.implicitConversions
-import scala.reflect.{classTag, ClassTag}
-import scala.util.control.NonFatal
+import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap}
+import java.util.{Arrays, Locale, Properties, ServiceLoader, UUID}
 
 import com.google.common.collect.MapMaker
 import org.apache.commons.lang3.SerializationUtils
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.hadoop.io.{ArrayWritable, BooleanWritable, BytesWritable, DoubleWritable, FloatWritable, IntWritable, LongWritable, NullWritable, Text, Writable}
-import org.apache.hadoop.mapred.{FileInputFormat, InputFormat, JobConf, SequenceFileInputFormat, TextInputFormat}
-import org.apache.hadoop.mapreduce.{InputFormat => NewInputFormat, Job => NewHadoopJob}
+import org.apache.hadoop.io._
+import org.apache.hadoop.mapred.{Utils => _, _}
 import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat => NewFileInputFormat}
-
+import org.apache.hadoop.mapreduce.{InputFormat => NewInputFormat, Job => NewHadoopJob}
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.deploy.{LocalSparkCluster, SparkHadoopUtil}
@@ -54,16 +45,25 @@ import org.apache.spark.rpc.RpcEndpointRef
 import org.apache.spark.scheduler._
 import org.apache.spark.scheduler.cluster.{CoarseGrainedSchedulerBackend, StandaloneSchedulerBackend}
 import org.apache.spark.scheduler.local.LocalSchedulerBackend
-import org.apache.spark.storage._
 import org.apache.spark.storage.BlockManagerMessages.TriggerThreadDump
-import org.apache.spark.ui.{ConsoleProgressBar, SparkUI}
+import org.apache.spark.storage._
 import org.apache.spark.ui.jobs.JobProgressListener
+import org.apache.spark.ui.{ConsoleProgressBar, SparkUI}
 import org.apache.spark.util._
+
+import scala.collection.JavaConverters._
+import scala.collection.Map
+import scala.collection.generic.Growable
+import scala.collection.mutable.HashMap
+import scala.language.implicitConversions
+import scala.reflect.{ClassTag, classTag}
+import scala.util.control.NonFatal
 
 /**
  * Main entry point for Spark functionality. A SparkContext represents the connection to a Spark
  * cluster, and can be used to create RDDs, accumulators and broadcast variables on that cluster.
- *
+ * spark 函数的主要入口，连接spark集群的桥梁。可以在集群中用来创建RDD，累加器，广播变量。
+ * sparkcontext初始化成功后才能向spark集群提交任务。
  * Only one SparkContext may be active per JVM.  You must `stop()` the active SparkContext before
  * creating a new one.  This limitation may eventually be removed; see SPARK-2243 for more details.
  *
@@ -430,6 +430,7 @@ class SparkContext(config: SparkConf) extends Logging {
     listenerBus.addListener(jobProgressListener)
 
     // Create the Spark execution environment (cache, map output tracker, etc)
+    //创建sparkEnv，spark的运行环境。
     _env = createSparkEnv(_conf, isLocal, listenerBus)
     SparkEnv.set(_env)
 
@@ -508,7 +509,7 @@ class SparkContext(config: SparkConf) extends Logging {
     // start TaskScheduler after taskScheduler sets DAGScheduler reference in DAGScheduler's
     // constructor
     _taskScheduler.start()
-
+    //获取application的id
     _applicationId = _taskScheduler.applicationId()
     _applicationAttemptId = taskScheduler.applicationAttemptId()
     _conf.set("spark.app.id", _applicationId)

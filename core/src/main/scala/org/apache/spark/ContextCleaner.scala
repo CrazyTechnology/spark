@@ -21,12 +21,12 @@ import java.lang.ref.{ReferenceQueue, WeakReference}
 import java.util.Collections
 import java.util.concurrent.{ConcurrentHashMap, ConcurrentLinkedQueue, ScheduledExecutorService, TimeUnit}
 
-import scala.collection.JavaConverters._
-
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.internal.Logging
 import org.apache.spark.rdd.{RDD, ReliableRDDCheckpointData}
 import org.apache.spark.util.{AccumulatorContext, AccumulatorV2, ThreadUtils, Utils}
+
+import scala.collection.JavaConverters._
 
 /**
  * Classes that represent cleaning tasks.
@@ -52,10 +52,12 @@ private class CleanupTaskWeakReference(
 
 /**
  * An asynchronous cleaner for RDD, shuffle, and broadcast state.
- *
+ * 用于RDD，随机播放和广播状态的异步清除器。
  * This maintains a weak reference for each RDD, ShuffleDependency, and Broadcast of interest,
  * to be processed when the associated object goes out of scope of the application. Actual
  * cleanup is performed in a separate daemon thread.
+ * 当相关对象超出应用程序范围时，这将为要处理的每个RDD，ShuffleDependency和所关注的广播维护弱引用。
+ * 实际清理是在单独的守护程序线程中执行的。
  */
 private[spark] class ContextCleaner(sc: SparkContext) extends Logging {
 
@@ -145,7 +147,7 @@ private[spark] class ContextCleaner(sc: SparkContext) extends Logging {
     periodicGCService.shutdown()
   }
 
-  /** Register an RDD for cleanup when it is garbage collected. */
+  /** 注册RDD以进行垃圾回收时的清理。 */
   def registerRDDForCleanup(rdd: RDD[_]): Unit = {
     registerForCleanup(rdd, CleanRDD(rdd.id))
   }

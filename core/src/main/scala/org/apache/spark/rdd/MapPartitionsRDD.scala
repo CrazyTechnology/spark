@@ -17,12 +17,13 @@
 
 package org.apache.spark.rdd
 
-import scala.reflect.ClassTag
-
 import org.apache.spark.{Partition, TaskContext}
+
+import scala.reflect.ClassTag
 
 /**
  * An RDD that applies the provided function to every partition of the parent RDD.
+ * 将提供的功能应用于父RDD的每个分区的RDD。
  */
 private[spark] class MapPartitionsRDD[U: ClassTag, T: ClassTag](
     var prev: RDD[T],
