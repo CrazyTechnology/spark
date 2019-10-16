@@ -239,6 +239,7 @@ class SparkContext(config: SparkConf) extends Logging {
   private[spark] def eventLogDir: Option[URI] = _eventLogDir
   private[spark] def eventLogCodec: Option[String] = _eventLogCodec
 
+  //判断是否是local模式执行的任务
   def isLocal: Boolean = Utils.isLocalMaster(_conf)
 
   /**
@@ -285,7 +286,7 @@ class SparkContext(config: SparkConf) extends Logging {
    * plan to set some global configurations for all Hadoop RDDs.
    */
   def hadoopConfiguration: Configuration = _hadoopConfiguration
-
+  //executor的执行内存大小
   private[spark] def executorMemory: Int = _executorMemory
 
   // Environment variables to pass to our executors.

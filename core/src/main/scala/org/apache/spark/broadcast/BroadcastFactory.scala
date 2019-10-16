@@ -21,9 +21,9 @@ private[spark] trait BroadcastFactory {
   /**
    * Creates a new broadcast variable.
    *
-   * @param value value to broadcast
-   * @param isLocal whether we are in local mode (single JVM process)
-   * @param id unique id representing this broadcast variable
+   * @param value value to broadcast  广播变量的值
+   * @param isLocal whether we are in local mode (single JVM process) 是否是local模式
+   * @param id unique id representing this broadcast variable  广播变量的id
    */
   def newBroadcast[T: ClassTag](value: T, isLocal: Boolean, id: Long): Broadcast[T]
 
