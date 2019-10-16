@@ -17,27 +17,27 @@
 
 package org.apache.spark.deploy.client
 
-import java.util.concurrent._
-import java.util.concurrent.{Future => JFuture, ScheduledFuture => JScheduledFuture}
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
-
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
-import scala.util.control.NonFatal
+import java.util.concurrent.{Future => JFuture, ScheduledFuture => JScheduledFuture, _}
 
 import org.apache.spark.SparkConf
-import org.apache.spark.deploy.{ApplicationDescription, ExecutorState}
 import org.apache.spark.deploy.DeployMessages._
 import org.apache.spark.deploy.master.Master
+import org.apache.spark.deploy.{ApplicationDescription, ExecutorState}
 import org.apache.spark.internal.Logging
 import org.apache.spark.rpc._
 import org.apache.spark.util.{RpcUtils, ThreadUtils}
 
+import scala.concurrent.Future
+import scala.util.control.NonFatal
+import scala.util.{Failure, Success}
+
 /**
  * Interface allowing applications to speak with a Spark standalone cluster manager.
- *
+ * 该接口允许应用程序与Spark独立集群管理器进行通话。
  * Takes a master URL, an app description, and a listener for cluster events, and calls
  * back the listener when various events occur.
+ * 获取master的URL，application的描述信息和集群事件的侦听器，并在发生各种事件时回调侦听器。
  *
  * @param masterUrls Each url should look like spark://host:port.
  */
@@ -51,7 +51,9 @@ private[spark] class StandaloneAppClient(
 
   private val masterRpcAddresses = masterUrls.map(RpcAddress.fromSparkURL(_))
 
+  //注册超时时间
   private val REGISTRATION_TIMEOUT_SECONDS = 20
+  //注册失败后重试次数
   private val REGISTRATION_RETRIES = 3
 
   private val endpoint = new AtomicReference[RpcEndpointRef]

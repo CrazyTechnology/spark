@@ -3,31 +3,26 @@ package org.apache.spark.rdd
 
 import java.util.Random
 
-import scala.collection.{mutable, Map}
-import scala.collection.mutable.ArrayBuffer
-import scala.io.Codec
-import scala.language.implicitConversions
-import scala.reflect.{classTag, ClassTag}
-
 import com.clearspring.analytics.stream.cardinality.HyperLogLogPlus
-import org.apache.hadoop.io.{BytesWritable, NullWritable, Text}
 import org.apache.hadoop.io.compress.CompressionCodec
+import org.apache.hadoop.io.{BytesWritable, NullWritable, Text}
 import org.apache.hadoop.mapred.TextOutputFormat
-
-import org.apache.spark._
 import org.apache.spark.Partitioner._
+import org.apache.spark._
 import org.apache.spark.annotation.{DeveloperApi, Since}
 import org.apache.spark.api.java.JavaRDD
 import org.apache.spark.internal.Logging
-import org.apache.spark.partial.BoundedDouble
-import org.apache.spark.partial.CountEvaluator
-import org.apache.spark.partial.GroupedCountEvaluator
-import org.apache.spark.partial.PartialResult
+import org.apache.spark.partial.{BoundedDouble, CountEvaluator, GroupedCountEvaluator, PartialResult}
 import org.apache.spark.storage.{RDDBlockId, StorageLevel}
-import org.apache.spark.util.{BoundedPriorityQueue, Utils}
 import org.apache.spark.util.collection.OpenHashMap
-import org.apache.spark.util.random.{BernoulliCellSampler, BernoulliSampler, PoissonSampler,
-  SamplingUtils}
+import org.apache.spark.util.random.{BernoulliCellSampler, BernoulliSampler, PoissonSampler, SamplingUtils}
+import org.apache.spark.util.{BoundedPriorityQueue, Utils}
+
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.{Map, mutable}
+import scala.io.Codec
+import scala.language.implicitConversions
+import scala.reflect.{ClassTag, classTag}
 
 /**
  * A Resilient Distributed Dataset (RDD), the basic abstraction in Spark. Represents an immutable,
@@ -379,6 +374,7 @@ abstract class RDD[T: ClassTag](
 
   /**
    * Return a new RDD containing the distinct elements in this RDD.
+   * 返回Rdd中不重复的元素
    */
   def distinct(numPartitions: Int)(implicit ord: Ordering[T] = null): RDD[T] = withScope {
     map(x => (x, null)).reduceByKey((x, y) => x, numPartitions).map(_._1)

@@ -5,17 +5,17 @@ import java.io._
 import java.nio.ByteBuffer
 import java.util.zip.Adler32
 
-import scala.collection.JavaConverters._
-import scala.reflect.ClassTag
-import scala.util.Random
-
 import org.apache.spark._
 import org.apache.spark.internal.Logging
 import org.apache.spark.io.CompressionCodec
 import org.apache.spark.serializer.Serializer
 import org.apache.spark.storage.{BlockId, BroadcastBlockId, StorageLevel}
-import org.apache.spark.util.{ByteBufferInputStream, Utils}
 import org.apache.spark.util.io.{ChunkedByteBuffer, ChunkedByteBufferOutputStream}
+import org.apache.spark.util.{ByteBufferInputStream, Utils}
+
+import scala.collection.JavaConverters._
+import scala.reflect.ClassTag
+import scala.util.Random
 
 /**
  *工作原理如下：
@@ -58,7 +58,7 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
     checksumEnabled = conf.getBoolean("spark.broadcast.checksum", true)
   }
   setConf(SparkEnv.get.conf)
-
+  //获取广播变量的id
   private val broadcastId = BroadcastBlockId(id)
 
   /** Total number of blocks this broadcast variable contains. 获取当前广播变量中block的数量 */
@@ -69,6 +69,7 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
   /** The checksum for all the blocks. */
   private var checksums: Array[Int] = _
 
+  //获取广播变量的值
   override protected def getValue() = {
     _value
   }
