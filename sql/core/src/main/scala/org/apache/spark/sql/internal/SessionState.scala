@@ -21,7 +21,6 @@ import java.io.File
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.sql._
 import org.apache.spark.sql.catalyst.TableIdentifier
 import org.apache.spark.sql.catalyst.analysis.{Analyzer, FunctionRegistry}
@@ -126,16 +125,19 @@ private[sql] class SessionState(sparkSession: SparkSession) {
 
   /**
    * Logical query plan optimizer.
+   * 逻辑查询计划优化器。
    */
   lazy val optimizer: Optimizer = new SparkOptimizer(catalog, conf, experimentalMethods)
 
   /**
    * Parser that extracts expressions, plans, table identifiers etc. from SQL texts.
+   * 从SQL文本中提取表达式，计划，表标识符等的解析器。
    */
   lazy val sqlParser: ParserInterface = new SparkSqlParser(conf)
 
   /**
    * Planner that converts optimized logical plans to physical plans.
+   * 将优化的逻辑计划转换为物理计划的计划程序。
    */
   def planner: SparkPlanner =
     new SparkPlanner(sparkSession.sparkContext, conf, experimentalMethods.extraStrategies)

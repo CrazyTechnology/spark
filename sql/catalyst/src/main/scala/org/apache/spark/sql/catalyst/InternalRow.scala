@@ -23,6 +23,7 @@ import org.apache.spark.sql.types.{DataType, Decimal, StructType}
 /**
  * An abstract class for row used internally in Spark SQL, which only contains the columns as
  * internal types.
+ * Spark SQL在内部使用的行的抽象类，仅包含作为内部类型的列。
  */
 abstract class InternalRow extends SpecializedGetters with Serializable {
 

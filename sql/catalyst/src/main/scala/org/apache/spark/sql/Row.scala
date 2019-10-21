@@ -1,28 +1,12 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.spark.sql
-
-import scala.collection.JavaConverters._
-import scala.util.hashing.MurmurHash3
 
 import org.apache.spark.annotation.InterfaceStability
 import org.apache.spark.sql.catalyst.expressions.GenericRow
 import org.apache.spark.sql.types.StructType
+
+import scala.collection.JavaConverters._
+import scala.util.hashing.MurmurHash3
 
 /**
  * @since 1.3.0
@@ -31,6 +15,8 @@ import org.apache.spark.sql.types.StructType
 object Row {
   /**
    * This method can be used to extract fields from a [[Row]] object in a pattern match. Example:
+   * 此方法可用于在模式匹配中从[[Row]]对象提取字段。
+   * 例：
    * {{{
    * import org.apache.spark.sql._
    *
@@ -44,11 +30,13 @@ object Row {
 
   /**
    * This method can be used to construct a [[Row]] with the given values.
+   * 此方法可用于构造具有给定值的[[Row]]。
    */
   def apply(values: Any*): Row = new GenericRow(values.toArray)
 
   /**
    * This method can be used to construct a [[Row]] from a [[Seq]] of values.
+   * 这种方法可用于用SEQ构建[[Row]值。
    */
   def fromSeq(values: Seq[Any]): Row = new GenericRow(values.toArray)
 
@@ -56,6 +44,7 @@ object Row {
 
   /**
    * Merge multiple rows into a single row, one after another.
+   * 将多行合并为一行。
    */
   def merge(rows: Row*): Row = {
     // TODO: Improve the performance of this if used in performance critical part.

@@ -586,6 +586,8 @@ class SparkSession private(
   /**
    * Executes a SQL query using Spark, returning the result as a `DataFrame`.
    * The dialect that is used for SQL parsing can be configured with 'spark.sql.dialect'.
+   * 使用Spark执行SQL查询，并以DataFrame的形式返回结果。
+   * 用于SQL解析的方言可以使用'spark.sql.dialect'进行配置。
    *
    * @since 2.0.0
    */

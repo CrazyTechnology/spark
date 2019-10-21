@@ -19,7 +19,6 @@ package org.apache.spark.sql.catalyst.parser
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.atn.PredictionMode
 import org.antlr.v4.runtime.misc.ParseCancellationException
-
 import org.apache.spark.internal.Logging
 import org.apache.spark.sql.AnalysisException
 import org.apache.spark.sql.catalyst.TableIdentifier
@@ -30,10 +29,11 @@ import org.apache.spark.sql.types.DataType
 
 /**
  * Base SQL parsing infrastructure.
+ * 基本的SQL解析基础结构。
  */
 abstract class AbstractSqlParser extends ParserInterface with Logging {
 
-  /** Creates/Resolves DataType for a given SQL string. */
+  /** 为给定的SQL字符串创建/解析DataType */
   def parseDataType(sqlText: String): DataType = parse(sqlText) { parser =>
     // TODO add this to the parser interface.
     astBuilder.visitSingleDataType(parser.singleDataType())
