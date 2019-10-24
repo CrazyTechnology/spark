@@ -3,10 +3,10 @@ package org.apache.spark.broadcast
 
 import java.util.concurrent.atomic.AtomicLong
 
-import scala.reflect.ClassTag
-
-import org.apache.spark.{SecurityManager, SparkConf}
 import org.apache.spark.internal.Logging
+import org.apache.spark.{SecurityManager, SparkConf}
+
+import scala.reflect.ClassTag
 
 private[spark] class BroadcastManager(
     val isDriver: Boolean,
@@ -20,9 +20,11 @@ private[spark] class BroadcastManager(
   initialize()
 
   // Called by SparkContext or Executor before using Broadcast
+  //使用之前 sparkcontext 和executor会回调
   private def initialize() {
     synchronized {
       if (!initialized) {
+        //实例化TorrentBroadcastFactory 工厂
         broadcastFactory = new TorrentBroadcastFactory
         broadcastFactory.initialize(isDriver, conf, securityManager)
         initialized = true

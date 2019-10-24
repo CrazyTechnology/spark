@@ -17,10 +17,9 @@
 
 package org.apache.spark.sql.sources
 
-import org.apache.spark.annotation.{DeveloperApi, Experimental, InterfaceStability}
+import org.apache.spark.annotation.{Experimental, InterfaceStability}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
-import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.execution.streaming.{Sink, Source}
 import org.apache.spark.sql.streaming.OutputMode
@@ -188,10 +187,14 @@ trait CreatableRelationProvider {
  * be able to produce the schema of their data in the form of a `StructType`. Concrete
  * implementation should inherit from one of the descendant `Scan` classes, which define various
  * abstract methods for execution.
- *
+ * 表示具有已知架构的元组的集合。
+ * 扩展BaseRelation的类必须能够以`StructType`的形式产生其数据模式。
+ * 具体的实现应继承自后代Scan类之一，该类定义了各种抽象的执行方法。
  * BaseRelations must also define an equality function that only returns true when the two
  * instances will return the same data. This equality function is used when determining when
  * it is safe to substitute cached results for a given relation.
+ * BaseRelations还必须定义一个相等函数，该函数仅在两个实例将返回相同数据时才返回true。
+ * 在确定何时可以安全地用缓存的结果替换给定关系时使用此相等函数。
  *
  * @since 1.3.0
  */
@@ -242,6 +245,7 @@ abstract class BaseRelation {
 
 /**
  * A BaseRelation that can produce all of its tuples as an RDD of Row objects.
+ * 可以将其所有元组生成为Row对象的RDD的BaseRelation。
  *
  * @since 1.3.0
  */
@@ -253,6 +257,7 @@ trait TableScan {
 /**
  * A BaseRelation that can eliminate unneeded columns before producing an RDD
  * containing all of its tuples as Row objects.
+ * 一个BaseRelation，可以在生成包含其所有元组作为Row对象的RDD之前消除不需要的列。
  *
  * @since 1.3.0
  */
@@ -264,7 +269,7 @@ trait PrunedScan {
 /**
  * A BaseRelation that can eliminate unneeded columns and filter using selected
  * predicates before producing an RDD containing all matching tuples as Row objects.
- *
+ * 一个BaseRelation，它可以消除不需要的列，并在生成包含所有匹配元组作为Row对象的RDD之前使用选定的谓词进行过滤。
  * The actual filter should be the conjunction of all `filters`,
  * i.e. they should be "and" together.
  *

@@ -17,13 +17,14 @@
 
 package org.apache.spark.sql.types
 
-import scala.reflect.runtime.universe.TypeTag
-
 import org.apache.spark.annotation.InterfaceStability
 import org.apache.spark.sql.catalyst.expressions.Expression
 
+import scala.reflect.runtime.universe.TypeTag
+
 /**
  * A non-concrete data type, reserved for internal uses.
+ * 非具体的数据类型，保留供内部使用
  */
 private[sql] abstract class AbstractDataType {
   /**

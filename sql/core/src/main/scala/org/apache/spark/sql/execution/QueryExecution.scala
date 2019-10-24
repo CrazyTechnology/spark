@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{AnalysisException, Row, SparkSession}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.analysis.UnsupportedOperationChecker
 import org.apache.spark.sql.catalyst.plans.logical.{LogicalPlan, ReturnAnswer}
@@ -30,6 +29,7 @@ import org.apache.spark.sql.catalyst.util.DateTimeUtils
 import org.apache.spark.sql.execution.command.{DescribeTableCommand, ExecutedCommandExec, ShowTablesCommand}
 import org.apache.spark.sql.execution.exchange.{EnsureRequirements, ReuseExchange}
 import org.apache.spark.sql.types.{BinaryType, DateType, DecimalType, TimestampType, _}
+import org.apache.spark.sql.{AnalysisException, Row, SparkSession}
 import org.apache.spark.util.Utils
 
 /**
@@ -63,7 +63,8 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
       UnsupportedOperationChecker.checkForBatch(analyzed)
     }
   }
-  //将为解析的逻辑计划转为以ing解析逻辑计划
+
+  //将未解析的逻辑计划转为解析逻辑计划
   lazy val analyzed: LogicalPlan = {
     SparkSession.setActiveSession(sparkSession)
     sparkSession.sessionState.analyzer.execute(logical)

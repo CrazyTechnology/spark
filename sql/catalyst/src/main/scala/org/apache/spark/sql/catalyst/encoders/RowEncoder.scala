@@ -1,40 +1,25 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.spark.sql.catalyst.encoders
+
+import org.apache.spark.SparkException
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.catalyst.ScalaReflection
+import org.apache.spark.sql.catalyst.analysis.GetColumnByOrdinal
+import org.apache.spark.sql.catalyst.expressions._
+import org.apache.spark.sql.catalyst.expressions.objects._
+import org.apache.spark.sql.catalyst.util.{ArrayBasedMapData, ArrayData, DateTimeUtils}
+import org.apache.spark.sql.types._
+import org.apache.spark.unsafe.types.UTF8String
 
 import scala.collection.Map
 import scala.reflect.ClassTag
 
-import org.apache.spark.SparkException
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.catalyst.expressions._
-import org.apache.spark.sql.catalyst.util.{ArrayBasedMapData, ArrayData, DateTimeUtils, GenericArrayData}
-import org.apache.spark.sql.catalyst.ScalaReflection
-import org.apache.spark.sql.catalyst.analysis.GetColumnByOrdinal
-import org.apache.spark.sql.catalyst.expressions.objects._
-import org.apache.spark.sql.types._
-import org.apache.spark.unsafe.types.UTF8String
-
 /**
  * A factory for constructing encoders that convert external row to/from the Spark SQL
  * internal binary representation.
- *
+ * 一个用于构造编码器的工厂，该编码器将外部行与Spark SQL内部二进制表示形式相互转换。
  * The following is a mapping between Spark SQL types and its allowed external types:
+ * 以下是Spark SQL类型与其允许的外部类型之间的映射
  * {{{
  *   BooleanType -> java.lang.Boolean
  *   ByteType -> java.lang.Byte

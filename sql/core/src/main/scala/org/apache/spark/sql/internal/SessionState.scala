@@ -108,6 +108,7 @@ private[sql] class SessionState(sparkSession: SparkSession) {
 
   /**
    * Logical query plan analyzer for resolving unresolved attributes and relations.
+   * 逻辑查询计划分析器，用于解析未解析的属性和关系。
    */
   lazy val analyzer: Analyzer = {
     new Analyzer(catalog, conf) {

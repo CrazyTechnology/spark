@@ -21,21 +21,20 @@ import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.util.LinkedHashMap
 
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-import scala.reflect.ClassTag
-
 import com.google.common.io.ByteStreams
-
-import org.apache.spark.{SparkConf, TaskContext}
 import org.apache.spark.internal.Logging
 import org.apache.spark.memory.{MemoryManager, MemoryMode}
 import org.apache.spark.serializer.{SerializationStream, SerializerManager}
 import org.apache.spark.storage._
 import org.apache.spark.unsafe.Platform
-import org.apache.spark.util.{SizeEstimator, Utils}
 import org.apache.spark.util.collection.SizeTrackingVector
 import org.apache.spark.util.io.{ChunkedByteBuffer, ChunkedByteBufferOutputStream}
+import org.apache.spark.util.{SizeEstimator, Utils}
+import org.apache.spark.{SparkConf, TaskContext}
+
+import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
+import scala.reflect.ClassTag
 
 private sealed trait MemoryEntry[T] {
   def size: Long
@@ -75,6 +74,7 @@ private[storage] trait BlockEvictionHandler {
 /**
  * Stores blocks in memory, either as Arrays of deserialized Java objects or as
  * serialized ByteBuffers.
+ * 将块存储为反序列化Java对象数组或存储为内存序列化的ByteBuffers。
  */
 private[spark] class MemoryStore(
     conf: SparkConf,
@@ -100,7 +100,8 @@ private[spark] class MemoryStore(
   private val unrollMemoryThreshold: Long =
     conf.getLong("spark.storage.unrollMemoryThreshold", 1024 * 1024)
 
-  /** Total amount of memory available for storage, in bytes. */
+  /** Total amount of memory available for storage, in bytes.
+   * 可用于存储的内存总量，以字节为单位。 */
   private def maxMemory: Long = {
     memoryManager.maxOnHeapStorageMemory + memoryManager.maxOffHeapStorageMemory
   }
@@ -113,7 +114,8 @@ private[spark] class MemoryStore(
 
   logInfo("MemoryStore started with capacity %s".format(Utils.bytesToString(maxMemory)))
 
-  /** Total storage memory used including unroll memory, in bytes. */
+  /** Total storage memory used including unroll memory, in bytes. 已使用的总存储内存（包括展开内存），以字节为单位。
+   */
   private def memoryUsed: Long = memoryManager.storageMemoryUsed
 
   /**

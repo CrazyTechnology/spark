@@ -1,36 +1,40 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.spark.util
 
 import java.io._
-import java.lang.{Byte => JByte}
 import java.lang.management.{LockInfo, ManagementFactory, MonitorInfo, ThreadInfo}
+import java.lang.{Byte => JByte}
 import java.net._
 import java.nio.ByteBuffer
 import java.nio.channels.{Channels, FileChannel}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import java.security.SecureRandom
-import java.util.{Locale, Properties, Random, UUID}
 import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.GZIPInputStream
+import java.util.{Locale, Properties, Random, UUID}
+
+import _root_.io.netty.channel.unix.Errors.NativeIoException
+import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
+import com.google.common.hash.HashCodes
+import com.google.common.io.{ByteStreams, Files => GFiles}
+import com.google.common.net.InetAddresses
 import javax.net.ssl.HttpsURLConnection
+import org.apache.commons.lang3.SystemUtils
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.{FileSystem, FileUtil, Path}
+import org.apache.hadoop.security.UserGroupInformation
+import org.apache.log4j.PropertyConfigurator
+import org.apache.spark._
+import org.apache.spark.deploy.SparkHadoopUtil
+import org.apache.spark.internal.Logging
+import org.apache.spark.internal.config._
+import org.apache.spark.network.util.JavaUtils
+import org.apache.spark.serializer.{DeserializationStream, SerializationStream, SerializerInstance}
+import org.eclipse.jetty.util.MultiException
+import org.json4s._
+import org.slf4j.Logger
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -41,27 +45,6 @@ import scala.reflect.ClassTag
 import scala.util.Try
 import scala.util.control.{ControlThrowable, NonFatal}
 import scala.util.matching.Regex
-
-import _root_.io.netty.channel.unix.Errors.NativeIoException
-import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
-import com.google.common.hash.HashCodes
-import com.google.common.io.{ByteStreams, Files => GFiles}
-import com.google.common.net.InetAddresses
-import org.apache.commons.lang3.SystemUtils
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.{FileSystem, FileUtil, Path}
-import org.apache.hadoop.security.UserGroupInformation
-import org.apache.log4j.PropertyConfigurator
-import org.eclipse.jetty.util.MultiException
-import org.json4s._
-import org.slf4j.Logger
-
-import org.apache.spark._
-import org.apache.spark.deploy.SparkHadoopUtil
-import org.apache.spark.internal.Logging
-import org.apache.spark.internal.config._
-import org.apache.spark.network.util.JavaUtils
-import org.apache.spark.serializer.{DeserializationStream, SerializationStream, SerializerInstance}
 
 /** CallSite represents a place in user code. It can have a short and a long form. */
 private[spark] case class CallSite(shortForm: String, longForm: String)
@@ -2197,6 +2180,8 @@ private[spark] object Utils extends Logging {
   /**
    * Attempt to start a service on the given port, or fail after a number of attempts.
    * Each subsequent attempt uses 1 + the port used in the previous attempt (unless the port is 0).
+   * 尝试在给定的端口上启动服务，或在多次尝试后失败。
+   * 每次后续尝试都使用1 +上一次尝试中使用的端口（除非端口为0）。
    *
    * @param startPort The initial port to start the service on.
    * @param startService Function to start service on a given port.

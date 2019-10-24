@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.spark
 
@@ -151,6 +135,7 @@ class SparkContext(config: SparkConf) extends Logging {
 
   /**
    * Alternative constructor that allows setting common Spark properties directly
+   * 允许直接设置常见Spark属性的替代构造函数
    *
    * @param master Cluster URL to connect to (e.g. mesos://host:port, spark://host:port, local[4]).
    * @param appName A name for your application, to display on the cluster web UI.
@@ -705,6 +690,7 @@ class SparkContext(config: SparkConf) extends Logging {
   // Methods for creating RDDs
 
   /** Distribute a local Scala collection to form an RDD.
+   * 分发本地Scala集合以形成RDD。
    *
    * @note Parallelize acts lazily. If `seq` is a mutable collection and is altered after the call
    * to parallelize and before the first action on the RDD, the resultant RDD will reflect the
@@ -794,6 +780,7 @@ class SparkContext(config: SparkConf) extends Logging {
   /** Distribute a local Scala collection to form an RDD.
    *
    * This method is identical to `parallelize`.
+   * 这个方法和`parallelize`相同。
    */
   def makeRDD[T: ClassTag](
       seq: Seq[T],

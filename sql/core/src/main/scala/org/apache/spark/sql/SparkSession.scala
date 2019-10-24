@@ -723,6 +723,7 @@ object SparkSession {
 
   /**
    * Builder for [[SparkSession]].
+   * 构建SparkSession
    */
   @InterfaceStability.Stable
   class Builder extends Logging {
@@ -801,6 +802,7 @@ object SparkSession {
     /**
      * Sets the Spark master URL to connect to, such as "local" to run locally, "local[4]" to
      * run locally with 4 cores, or "spark://master:7077" to run on a Spark standalone cluster.
+     * 设置spark master的url
      *
      * @since 2.0.0
      */
@@ -825,7 +827,7 @@ object SparkSession {
     /**
      * Gets an existing [[SparkSession]] or, if there is no existing one, creates a new
      * one based on the options set in this builder.
-     * 获取已经存在的sparksession或者创建一个新的sparkSession
+     * 获取已经存在的sparksession或者根据Set设置创建一个新的sparkSession
      * This method first checks whether there is a valid thread-local SparkSession,
      * and if yes, return that one. It then checks whether there is a valid global
      * default SparkSession, and if yes, return that one. If no valid global default

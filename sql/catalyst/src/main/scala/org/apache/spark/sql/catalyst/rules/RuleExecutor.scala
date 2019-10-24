@@ -17,15 +17,14 @@
 
 package org.apache.spark.sql.catalyst.rules
 
-import scala.collection.JavaConverters._
-
 import com.google.common.util.concurrent.AtomicLongMap
-
 import org.apache.spark.internal.Logging
 import org.apache.spark.sql.catalyst.errors.TreeNodeException
 import org.apache.spark.sql.catalyst.trees.TreeNode
 import org.apache.spark.sql.catalyst.util.sideBySide
 import org.apache.spark.util.Utils
+
+import scala.collection.JavaConverters._
 
 object RuleExecutor {
   protected val timeMap = AtomicLongMap.create[String]()
@@ -67,6 +66,9 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
   /**
    * Executes the batches of rules defined by the subclass. The batches are executed serially
    * using the defined execution strategy. Within each batch, rules are also executed serially.
+   * 执行子类定义的规则批次。
+   * 使用定义的执行策略按顺序执行批次。
+   * 在每个批次中，规则也按顺序执行。
    */
   def execute(plan: TreeType): TreeType = {
     var curPlan = plan

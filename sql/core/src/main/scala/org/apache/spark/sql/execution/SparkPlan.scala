@@ -19,22 +19,22 @@ package org.apache.spark.sql.execution
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 
-import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.ExecutionContext
-
-import org.apache.spark.{broadcast, SparkEnv}
 import org.apache.spark.internal.Logging
 import org.apache.spark.io.CompressionCodec
 import org.apache.spark.rdd.{RDD, RDDOperationScope}
-import org.apache.spark.sql.{Row, SparkSession}
-import org.apache.spark.sql.catalyst.{CatalystTypeConverters, InternalRow}
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.catalyst.expressions.codegen.{Predicate => GenPredicate, _}
 import org.apache.spark.sql.catalyst.plans.QueryPlan
 import org.apache.spark.sql.catalyst.plans.physical._
+import org.apache.spark.sql.catalyst.{CatalystTypeConverters, InternalRow}
 import org.apache.spark.sql.execution.metric.SQLMetric
 import org.apache.spark.sql.types.DataType
+import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.util.ThreadUtils
+import org.apache.spark.{SparkEnv, broadcast}
+
+import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.ExecutionContext
 
 /**
  * The base class for physical operators.
@@ -207,6 +207,8 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
   /**
    * Overridden by concrete implementations of SparkPlan.
    * Produces the result of the query as an RDD[InternalRow]
+   * 被SparkPlan的具体实现覆盖。
+   * 将查询结果生成为RDD [InternalRow]
    */
   protected def doExecute(): RDD[InternalRow]
 
