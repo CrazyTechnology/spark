@@ -274,6 +274,7 @@ abstract class LogicalPlan extends QueryPlan[LogicalPlan] with Logging {
 
 /**
  * A logical plan node with no children.
+ * 逻辑计划的叶子节点，没有子节点
  */
 abstract class LeafNode extends LogicalPlan {
   override final def children: Seq[LogicalPlan] = Nil
@@ -282,6 +283,7 @@ abstract class LeafNode extends LogicalPlan {
 
 /**
  * A logical plan node with single child.
+ * 逻辑计划的节点，有一个子节点
  */
 abstract class UnaryNode extends LogicalPlan {
   def child: LogicalPlan

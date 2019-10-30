@@ -18,6 +18,7 @@ abstract class GenericStrategy[PhysicalPlan <: TreeNode[PhysicalPlan]] extends L
    * Returns a placeholder for a physical plan that executes `plan`. This placeholder will be
    * filled in automatically by the QueryPlanner using the other execution strategies that are
    * available.
+   * 返回执行“ plan”的物理计划的占位符。 QueryPlanner将使用其他可用的执行策略自动填充此占位符。
    */
   protected def planLater(plan: LogicalPlan): PhysicalPlan
 
@@ -28,10 +29,11 @@ abstract class GenericStrategy[PhysicalPlan <: TreeNode[PhysicalPlan]] extends L
  * Abstract class for transforming [[LogicalPlan]]s into physical plans.
  * Child classes are responsible for specifying a list of [[GenericStrategy]] objects that
  * each of which can return a list of possible physical plan options.
+ * 用于将[[LogicalPlan]]转换为物理计划的抽象类。子类负责指定[[GenericStrategy]]对象的列表，每个对象都可以返回可能的物理计划选项的列表。
  * If a given strategy is unable to plan all
  * of the remaining operators in the tree, it can call [[planLater]], which returns a placeholder
  * object that will be filled in using other available strategies.
- *
+ * 如果给定策略无法计划树中所有剩余的运算符，则可以调用[[planLater]]，该参数返回一个占位符对象，该对象将使用其他可用策略进行填充。
  * TODO: RIGHT NOW ONLY ONE PLAN IS RETURNED EVER...
  *       PLAN SPACE EXPLORATION WILL BE IMPLEMENTED LATER.
  *
@@ -82,6 +84,7 @@ abstract class QueryPlanner[PhysicalPlan <: TreeNode[PhysicalPlan]] {
   /** Collects placeholders marked as [[planLater]] by strategy and its [[LogicalPlan]]s */
   protected def collectPlaceholders(plan: PhysicalPlan): Seq[(PhysicalPlan, LogicalPlan)]
 
-  /** Prunes bad plans to prevent combinatorial explosion. */
+  /** Prunes bad plans to prevent combinatorial explosion.
+   * 修剪不良的计划以防止组合爆炸 */
   protected def prunePlans(plans: Iterator[PhysicalPlan]): Iterator[PhysicalPlan]
 }

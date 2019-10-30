@@ -50,6 +50,9 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
    * populated by the query planning infrastructure.
    * 用于创建此计划的SQL上下文的句柄。
    * 由于许多操作员需要访问sqlContext才能进行RDD操作或配置，因此该字段由查询计划基础结构自动填充。
+   * SparkPlan的主要功能可以分成三大块：
+   * 1。记录元数据和指标信息，以key-value的形式存储在Map数据结构中,统称为spark的metaData和mertic体系
+   * 2.对RDD进行Transformation 操作时设计数据分区和排序
    */
   @transient
   final val sqlContext = SparkSession.getActiveSession.map(_.sqlContext).orNull
@@ -249,7 +252,7 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
   }
 
   /**
-   * Decode the byte arrays back to UnsafeRows and put them into buffer.
+   * Decode the byte arrays back to UnsafeRows and put them into buffer.将字节数组解码回UnsafeRows并将其放入缓冲区。
    */
   private def decodeUnsafeRows(bytes: Array[Byte]): Iterator[InternalRow] = {
     val nFields = schema.length
@@ -274,6 +277,7 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
 
   /**
    * Runs this query returning the result as an array.
+   * 运行此查询以数组形式返回结果。
    */
   def executeCollect(): Array[InternalRow] = {
     val byteArrayRdd = getByteArrayRdd()

@@ -17,18 +17,15 @@
 
 package org.apache.spark.sql.execution
 
-import scala.collection.mutable.ArrayBuffer
-
 import org.apache.commons.lang3.StringUtils
 import org.apache.hadoop.fs.{BlockLocation, FileStatus, LocatedFileStatus, Path}
-
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{AnalysisException, SparkSession}
-import org.apache.spark.sql.catalyst.{InternalRow, TableIdentifier}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.catalyst.catalog.BucketSpec
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.catalyst.expressions.codegen.{CodegenContext, ExprCode}
 import org.apache.spark.sql.catalyst.plans.physical.{HashPartitioning, Partitioning, UnknownPartitioning}
+import org.apache.spark.sql.catalyst.{InternalRow, TableIdentifier}
 import org.apache.spark.sql.execution.datasources._
 import org.apache.spark.sql.execution.datasources.parquet.{ParquetFileFormat => ParquetSource}
 import org.apache.spark.sql.execution.metric.SQLMetrics
@@ -36,6 +33,8 @@ import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.sources.{BaseRelation, Filter}
 import org.apache.spark.sql.types.{DataType, StructType}
 import org.apache.spark.util.Utils
+
+import scala.collection.mutable.ArrayBuffer
 
 trait DataSourceScanExec extends LeafExecNode with CodegenSupport {
   val relation: BaseRelation
@@ -46,7 +45,8 @@ trait DataSourceScanExec extends LeafExecNode with CodegenSupport {
   }
 }
 
-/** Physical plan node for scanning data from a relation. */
+/** Physical plan node for scanning data from a relation.
+ * 用于从关系中扫描数据的物理计划节点。 */
 case class RowDataSourceScanExec(
     output: Seq[Attribute],
     rdd: RDD[InternalRow],
@@ -130,6 +130,7 @@ case class RowDataSourceScanExec(
 
 /**
  * Physical plan node for scanning data from HadoopFsRelations.
+ * 用于扫描来自HadoopFsRelations的数据的物理计划节点。
  *
  * @param relation The file-based relation to scan.
  * @param output Output attributes of the scan.

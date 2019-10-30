@@ -17,15 +17,12 @@
 
 package org.apache.spark.sql.hive.execution
 
-import scala.collection.JavaConverters._
-
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hive.ql.metadata.{Partition => HivePartition}
 import org.apache.hadoop.hive.serde.serdeConstants
-import org.apache.hadoop.hive.serde2.objectinspector._
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorUtils.ObjectInspectorCopyOption
+import org.apache.hadoop.hive.serde2.objectinspector._
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoUtils
-
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.catalyst.InternalRow
@@ -61,6 +58,7 @@ case class HiveTableScanExec(
     AttributeSet(partitionPruningPred.flatMap(_.references))
 
   // Retrieve the original attributes based on expression ID so that capitalization matches.
+  //根据表达式ID检索原始属性，以使大小写匹配。
   val attributes = requestedAttributes.map(relation.attributeMap)
 
   // Bind all partition key attribute references in the partition pruning predicate for later

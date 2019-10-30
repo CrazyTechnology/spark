@@ -87,6 +87,7 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
 
   // executedPlan should not be used to initialize any SparkPlan. It should be
   // only used for execution.
+  // executePlan不应用于初始化任何SparkPlan。它仅应用于执行。
   lazy val executedPlan: SparkPlan = prepareForExecution(sparkPlan)
 
   /** Internal version of the RDD. Avoids copies and has no schema */
@@ -95,6 +96,7 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
   /**
    * Prepares a planned [[SparkPlan]] for execution by inserting shuffle operations and internal
    * row format conversions as needed.
+   * 通过根据需要插入随机操作和内部行格式转换，为执行准备计划的[[SparkPlan]]。
    */
   protected def prepareForExecution(plan: SparkPlan): SparkPlan = {
     preparations.foldLeft(plan) { case (sp, rule) => rule.apply(sp) }

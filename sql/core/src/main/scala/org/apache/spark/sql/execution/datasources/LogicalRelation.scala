@@ -25,10 +25,12 @@ import org.apache.spark.util.Utils
 
 /**
  * Used to link a [[BaseRelation]] in to a logical query plan.
- *
+ * 用于将[[BaseRelation]]链接到逻辑查询计划。
  * Note that sometimes we need to use `LogicalRelation` to replace an existing leaf node without
  * changing the output attributes' IDs.  The `expectedOutputAttributes` parameter is used for
  * this purpose.  See https://issues.apache.org/jira/browse/SPARK-10741 for more details.
+ * 注意，有时我们需要使用“ LogicalRelation”来替换现有的叶子节点，而无需更改输出属性的ID。
+ * “ expectedOutputAttributes”参数用于此目的。
  */
 case class LogicalRelation(
     relation: BaseRelation,

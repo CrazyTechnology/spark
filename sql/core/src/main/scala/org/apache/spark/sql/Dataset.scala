@@ -31,7 +31,6 @@ import org.apache.spark.storage.StorageLevel
 import org.apache.spark.unsafe.types.CalendarInterval
 import org.apache.spark.util.Utils
 
-import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 import scala.reflect.runtime.universe.TypeTag
 import scala.util.control.NonFatal
@@ -587,6 +586,7 @@ class Dataset[T] private[sql](
   /**
    * Displays the top 20 rows of Dataset in a tabular form. Strings more than 20 characters
    * will be truncated, and all cells will be aligned right.
+   * 默认显示20条数据
    *
    * @group action
    * @since 1.6.0
@@ -1745,6 +1745,7 @@ class Dataset[T] private[sql](
 
   /**
    * Randomly splits this Dataset with the provided weights.
+   * 使用提供的权重随机分割此数据集
    *
    * @param weights weights for splits, will be normalized if they don't sum to 1.
    * @group typedrel
@@ -2023,6 +2024,7 @@ class Dataset[T] private[sql](
   /**
    * Returns a new Dataset with duplicate rows removed, considering only
    * the subset of columns.
+   * 返回仅删除列的子集的，删除了重复行的新数据集。
    *
    * @group typedrel
    * @since 2.0.0
@@ -2342,14 +2344,10 @@ class Dataset[T] private[sql](
 
   /**
    * Returns an array that contains all of [[Row]]s in this Dataset.
-   *
+   * 返回一个数组，该数组包含此数据集中的所有[[Row]]。
    * Running collect requires moving all the data into the application's driver process, and
    * doing so on a very large dataset can crash the driver process with OutOfMemoryError.
-   *
-   * For Java API, use [[collectAsList]].
-   *
-   * @group action
-   * @since 1.6.0
+   * 运行收集需要将所有数据移至应用程序的驱动程序进程中，而在非常大的数据集上执行此操作可能会导致OutOfMemoryError导致驱动程序进程崩溃
    */
   def collect(): Array[T] = collect(needCallback = true)
 

@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.spark.sql.sources
 
@@ -29,8 +13,9 @@ import org.apache.spark.sql.types.StructType
  * Data sources should implement this trait so that they can register an alias to their data source.
  * This allows users to give the data source alias as the format type over the fully qualified
  * class name.
- *
+ * 数据源应实现此特征，以便它们可以向其数据源注册别名。 这样，用户可以在完全限定的类名上为数据源别名提供格式类型的别名。
  * A new instance of this class will be instantiated each time a DDL call is made.
+ * 每次进行DDL调用时都会实例化此类的新实例。
  *
  * @since 1.5.0
  */
@@ -40,7 +25,7 @@ trait DataSourceRegister {
   /**
    * The string that represents the format that this data source provider uses. This is
    * overridden by children to provide a nice alias for the data source. For example:
-   *
+   * 表示此数据源提供程序使用的格式的字符串。 子级将其覆盖以为数据源提供一个很好的别名。 例如：
    * {{{
    *   override def shortName(): String = "parquet"
    * }}}
@@ -54,13 +39,16 @@ trait DataSourceRegister {
  * Implemented by objects that produce relations for a specific kind of data source.  When
  * Spark SQL is given a DDL operation with a USING clause specified (to specify the implemented
  * RelationProvider), this interface is used to pass in the parameters specified by a user.
- *
+ * 由为特定类型的数据源产生关系的对象实现。 当为Spark SQL提供指定了USING子句的DDL操作（以指定实现的RelationProvider）时，
+ * 此接口用于传递用户指定的参数。
  * Users may specify the fully qualified class name of a given data source.  When that class is
  * not found Spark SQL will append the class name `DefaultSource` to the path, allowing for
  * less verbose invocation.  For example, 'org.apache.spark.sql.json' would resolve to the
  * data source 'org.apache.spark.sql.json.DefaultSource'
- *
+ * 用户可以指定给定数据源的标准类名。 当找不到该类时，Spark SQL会将类名称DefaultDefault附加到路径中，以减少冗长的调用。
+ * 例如，“ org.apache.spark.sql.json”将解析为数据源“ org.apache.spark.sql.json.DefaultSource”
  * A new instance of this class will be instantiated each time a DDL call is made.
+ * 每次进行DDL调用时都会实例化此类的新实例。
  *
  * @since 1.3.0
  */
@@ -209,24 +197,28 @@ abstract class BaseRelation {
    * know the size ahead of time. By default, the system will assume that tables are too
    * large to broadcast. This method will be called multiple times during query planning
    * and thus should not perform expensive operations for each invocation.
+   * 返回此关系的估计大小（以字节为单位）。 计划人员可以使用此信息来确定何时安全广播关系，并且可以由事先知道其大小的消息源覆盖。
+   * 默认情况下，系统将假定表太大而无法广播。 在查询计划期间将多次调用此方法，因此不应为每次调用执行昂贵的操作。
    *
    * @note It is always better to overestimate size than underestimate, because underestimation
    * could lead to execution plans that are suboptimal (i.e. broadcasting a very large table).
-   *
+   *       总是高估大小总比低估好，因为低估可能会导致执行计划不理想（即广播很大的表）。
    * @since 1.3.0
    */
   def sizeInBytes: Long = sqlContext.conf.defaultSizeInBytes
 
   /**
    * Whether does it need to convert the objects in Row to internal representation, for example:
+   * 是否需要将Row中的对象转换为内部表示，例如：
    *  java.lang.String to UTF8String
    *  java.lang.Decimal to Decimal
    *
    * If `needConversion` is `false`, buildScan() should return an `RDD` of `InternalRow`
+   * 如果“ needConversion”为“ false”，则buildScan（）应该返回“ InternalRow”的“ RDD”。
    *
    * @note The internal representation is not stable across releases and thus data sources outside
    * of Spark SQL should leave this as true.
-   *
+   *       内部表示形式在各个发行版中不稳定，因此Spark SQL外部的数据源应将其保留为true。
    * @since 1.4.0
    */
   def needConversion: Boolean = true

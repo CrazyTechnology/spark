@@ -18,7 +18,6 @@
 package org.apache.spark.sql.execution
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SaveMode, Strategy}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.encoders.RowEncoder
 import org.apache.spark.sql.catalyst.expressions._
@@ -26,7 +25,6 @@ import org.apache.spark.sql.catalyst.planning._
 import org.apache.spark.sql.catalyst.plans._
 import org.apache.spark.sql.catalyst.plans.logical.{BroadcastHint, EventTimeWatermark, LogicalPlan}
 import org.apache.spark.sql.catalyst.plans.physical._
-import org.apache.spark.sql.execution
 import org.apache.spark.sql.execution.columnar.{InMemoryRelation, InMemoryTableScanExec}
 import org.apache.spark.sql.execution.command._
 import org.apache.spark.sql.execution.datasources._
@@ -35,12 +33,15 @@ import org.apache.spark.sql.execution.joins.{BuildLeft, BuildRight}
 import org.apache.spark.sql.execution.streaming._
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.streaming.StreamingQuery
+import org.apache.spark.sql.{SaveMode, Strategy, execution}
 
 /**
  * Converts a logical plan into zero or more SparkPlans.  This API is exposed for experimenting
  * with the query planner and is not designed to be stable across spark releases.  Developers
  * writing libraries should instead consider using the stable APIs provided in
  * [[org.apache.spark.sql.sources]]
+ * 将逻辑计划转换为零个或多个SparkPlans。 该API公开用于与查询计划程序一起进行实验，并非旨在在Spark版本之间保持稳定。
+ * 写库的开发人员应该考虑使用[[org.apache.spark.sql.sources]]中提供的稳定的API。
  */
 abstract class SparkStrategy extends GenericStrategy[SparkPlan] {
 
