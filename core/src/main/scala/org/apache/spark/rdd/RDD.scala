@@ -1746,6 +1746,9 @@ abstract class RDD[T: ClassTag](
    * Performs the checkpointing of this RDD by saving this. It is called after a job using this RDD
    * has completed (therefore the RDD has been materialized and potentially stored in memory).
    * doCheckpoint() is called recursively on the parent RDDs.
+   * 通过保存此RDD来执行检查点。
+   * 在使用该RDD的作业完成后调用（因此RDD已实现并可能存储在内存中）。
+   * 在父RDD上递归调用doCheckpoint（）。
    */
   private[spark] def doCheckpoint(): Unit = {
     RDDOperationScope.withScope(sc, "checkpoint", allowNesting = false, ignoreParent = true) {

@@ -21,6 +21,7 @@ import org.apache.spark.TaskCommitDenied
 
 /**
  * Exception thrown when a task attempts to commit output to HDFS but is denied by the driver.
+ * 当任务尝试将输出提交到HDFS时被抛出，但被驱动程序拒绝。
  */
 private[spark] class CommitDeniedException(
     msg: String,

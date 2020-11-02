@@ -1441,7 +1441,8 @@ private[spark] object Utils extends Logging {
    * When called inside a class in the spark package, returns the name of the user code class
    * (outside the spark package) that called into Spark, as well as which Spark method they called.
    * This is used, for example, to tell users where in their code each RDD got created.
-   *
+   * 在spark软件包中的类内部调用时，返回已调用Spark的用户代码类的名称（在spark软件包外部）以及它们调用的Spark方法。
+   * 例如，它用于告诉用户在其代码中的哪个位置创建了每个RDD
    * @param skipClass Function that is used to exclude non-user-code classes.
    */
   def getCallSite(skipClass: String => Boolean = sparkInternalExclusionFunction): CallSite = {

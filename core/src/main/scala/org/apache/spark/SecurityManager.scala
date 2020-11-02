@@ -339,12 +339,13 @@ private[spark] class SecurityManager(
 
   /**
    * Initialize the authentication secret.
-   *
+   *初始化身份验证密码。
    * If authentication is disabled, do nothing.
-   *
+   *如果禁用身份验证，则什么也不做
    * In YARN and local mode, generate a new secret and store it in the current user's credentials.
-   *
+   * 在YARN和本地模式下，生成一个新的秘密并将其存储在当前用户的凭据中。
    * In other modes, assert that the auth secret is set in the configuration.
+   * 在其他模式下，断言在配置中设置了auth机密。
    */
   def initializeAuth(): Unit = {
     import SparkMasterRegex._

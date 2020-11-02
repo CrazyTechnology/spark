@@ -33,7 +33,8 @@ import org.apache.spark.util.Utils
 
 /**
  * Configuration for a Spark application. Used to set various Spark parameters as key-value pairs.
- *
+ * Spark应用程序的配置。
+ * 用于将各种Spark参数设置为键值对。
  * Most of the time, you would create a SparkConf object with `new SparkConf()`, which will load
  * values from any `spark.*` Java system properties set in your application as well. In this case,
  * parameters you set directly on the `SparkConf` object take priority over system properties.
@@ -45,7 +46,6 @@ import org.apache.spark.util.Utils
  * `new SparkConf().setMaster("local").setAppName("My app")`.
  *
  * @param loadDefaults whether to also load values from Java system properties
- *
  * @note Once a SparkConf object is passed to Spark, it is cloned and can no longer be modified
  * by the user. Spark does not support modifying the configuration at runtime.
  */

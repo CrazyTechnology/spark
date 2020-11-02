@@ -350,6 +350,9 @@ private[spark] class TaskSchedulerImpl(
    * Called by cluster manager to offer resources on slaves. We respond by asking our active task
    * sets for tasks in order of priority. We fill each node with tasks in a round-robin manner so
    * that tasks are balanced across the cluster.
+   * 由集群管理器调用以在从属服务器上提供资源。
+   * 我们通过以优先顺序询问活动任务集来响应任务。
+   * 我们以轮循方式为每个节点填充任务，以便在整个群集之间平衡任务。
    */
   def resourceOffers(offers: IndexedSeq[WorkerOffer]): Seq[Seq[TaskDescription]] = synchronized {
     // Mark each slave as alive and remember its hostname

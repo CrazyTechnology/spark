@@ -47,6 +47,7 @@ class ExecutorSource(threadPool: ThreadPoolExecutor, executorId: String) extends
   override val sourceName = "executor"
 
   // Gauge for executor thread pool's actively executing task counts
+  //执行程序线程池的活动执行任务计数的量规
   metricRegistry.register(MetricRegistry.name("threadpool", "activeTasks"), new Gauge[Int] {
     override def getValue: Int = threadPool.getActiveCount()
   })

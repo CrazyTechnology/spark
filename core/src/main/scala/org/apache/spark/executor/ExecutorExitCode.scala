@@ -26,14 +26,20 @@ import org.apache.spark.util.SparkExitCode._
  * with "natural" exit statuses that may be caused by the JVM or user code. In particular,
  * exit codes 128+ arise on some Unix-likes as a result of signals, and it appears that the
  * OpenJDK JVM may use exit code 1 in some of its own "last chance" code.
+ * 假设集群管理框架可以捕获退出代码（但可能不是日志文件），则执行者应使用这些退出代码向主机提供有关执行者故障的信息。
+ * 选择此处的退出代码常量，使其不可能与JVM或用户代码可能导致的“自然”退出状态发生冲突。
+ * 特别地，由于某些信号，退出代码128+会在某些类Unix上出现，并且看来OpenJDK JVM可能会在其自己的“最后机会”代码中使用退出代码1。
  */
 private[spark]
 object ExecutorExitCode {
 
-  /** DiskStore failed to create a local temporary directory after many attempts. */
+  /** DiskStore failed to create a local temporary directory after many attempts.
+   * 多次尝试后，DiskStore无法创建本地临时目录。
+   * */
   val DISK_STORE_FAILED_TO_CREATE_DIR = 53
 
-  /** ExternalBlockStore failed to initialize after many attempts. */
+  /** ExternalBlockStore failed to initialize after many attempts.
+   * 多次尝试后，ExternalBlockStore未能初始化。 */
   val EXTERNAL_BLOCK_STORE_FAILED_TO_INITIALIZE = 54
 
   /** ExternalBlockStore failed to create a local temporary directory after many attempts. */

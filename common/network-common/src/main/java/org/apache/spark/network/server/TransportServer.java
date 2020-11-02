@@ -58,6 +58,8 @@ public class TransportServer implements Closeable {
   /**
    * Creates a TransportServer that binds to the given host and the given port, or to any available
    * if 0. If you don't want to bind to any special host, set "hostToBind" to null.
+   * 创建一个TransportServer，该Server绑定到给定的主机和给定的端口，或者绑定到任何可用的端口（如果为0的话）。
+   * 如果不想绑定到任何特殊的主机，请将“ hostToBind”设置为null。
    * */
   public TransportServer(
       TransportContext context,

@@ -165,8 +165,10 @@ object SparkEnv extends Logging {
     assert(conf.contains(DRIVER_HOST_ADDRESS),
       s"${DRIVER_HOST_ADDRESS.key} is not set on the driver!")
     assert(conf.contains("spark.driver.port"), "spark.driver.port is not set on the driver!")
+    //driver的地址
     val bindAddress = conf.get(DRIVER_BIND_ADDRESS)
     val advertiseAddress = conf.get(DRIVER_HOST_ADDRESS)
+    //driver的端口
     val port = conf.get("spark.driver.port").toInt
     val ioEncryptionKey = if (conf.get(IO_ENCRYPTION_ENABLED)) {
       Some(CryptoStreamUtils.createKey(conf))
@@ -214,6 +216,7 @@ object SparkEnv extends Logging {
 
   /**
    * Helper method to create a SparkEnv for a driver or an executor.
+   * 为驱动程序或执行程序创建SparkEnv的帮助程序方法
    */
   private def create(
       conf: SparkConf,
@@ -227,6 +230,7 @@ object SparkEnv extends Logging {
       listenerBus: LiveListenerBus = null,
       mockOutputCommitCoordinator: Option[OutputCommitCoordinator] = None): SparkEnv = {
 
+    //判断是否是driver
     val isDriver = executorId == SparkContext.DRIVER_IDENTIFIER
 
     // Listener bus is only used on the driver
@@ -236,6 +240,7 @@ object SparkEnv extends Logging {
 
     val securityManager = new SecurityManager(conf, ioEncryptionKey)
     if (isDriver) {
+      //安全管理初始化权限
       securityManager.initializeAuth()
     }
 
@@ -247,6 +252,7 @@ object SparkEnv extends Logging {
     }
 
     val systemName = if (isDriver) driverSystemName else executorSystemName
+    //远程调用创建driver的
     val rpcEnv = RpcEnv.create(systemName, bindAddress, advertiseAddress, port.getOrElse(-1), conf,
       securityManager, numUsableCores, !isDriver)
 

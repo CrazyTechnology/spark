@@ -53,6 +53,7 @@ import org.apache.spark.util.io.ChunkedByteBuffer
  * except in the case of Mesos fine-grained mode.
   * 通过rpc协议来和driver进行交流通信
  */
+//noinspection ScalaStyle
 private[spark] class Executor(
     executorId: String,
     executorHostname: String,

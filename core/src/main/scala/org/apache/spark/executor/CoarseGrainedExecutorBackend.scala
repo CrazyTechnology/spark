@@ -37,6 +37,7 @@ import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.serializer.SerializerInstance
 import org.apache.spark.util.{ThreadUtils, Utils}
 
+//noinspection ScalaStyle 无需检查ScalaStyle
 private[spark] class CoarseGrainedExecutorBackend(
     override val rpcEnv: RpcEnv,
     driverUrl: String,
@@ -53,10 +54,13 @@ private[spark] class CoarseGrainedExecutorBackend(
 
   // If this CoarseGrainedExecutorBackend is changed to support multiple threads, then this may need
   // to be changed so that we don't share the serializer instance across threads
+  //如果将此CoarseGrainedExecutorBackend更改为支持多个线程，则可能需要更改此设置，以便我们不会在线程之间共享序列化程序实例
   private[this] val ser: SerializerInstance = env.closureSerializer.newInstance()
 
+  //noinspection ScalaStyle
   override def onStart() {
     logInfo("Connecting to driver: " + driverUrl)
+    //连接driver
     rpcEnv.asyncSetupEndpointRefByURI(driverUrl).flatMap { ref =>
       // This is a very fast action so we can use "ThreadUtils.sameThread"
       driver = Some(ref)
@@ -78,24 +82,29 @@ private[spark] class CoarseGrainedExecutorBackend(
   }
 
   override def receive: PartialFunction[Any, Unit] = {
+        //注册executor
     case RegisteredExecutor =>
       logInfo("Successfully registered with driver")
       try {
+        //注册executor，实例化一个excutor。
         executor = new Executor(executorId, hostname, env, userClassPath, isLocal = false)
       } catch {
         case NonFatal(e) =>
+          //创建executorr失败
           exitExecutor(1, "Unable to create executor due to " + e.getMessage, e)
       }
 
     case RegisterExecutorFailed(message) =>
       exitExecutor(1, "Slave registration failed: " + message)
 
+      //运行task
     case LaunchTask(data) =>
       if (executor == null) {
         exitExecutor(1, "Received LaunchTask command but executor was null")
       } else {
         val taskDesc = TaskDescription.decode(data.value)
         logInfo("Got assigned task " + taskDesc.taskId)
+        //executor调度launchTask
         executor.launchTask(this, taskDesc)
       }
 
