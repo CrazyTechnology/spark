@@ -216,11 +216,13 @@ private[spark] class ClientApp extends SparkApplication {
     }
     Logger.getRootLogger.setLevel(driverArgs.logLevel)
 
+    //创建rpc的通信环境
     val rpcEnv =
       RpcEnv.create("driverClient", Utils.localHostName(), 0, conf, new SecurityManager(conf))
-
+    //创建Master的通信邮箱
     val masterEndpoints = driverArgs.masters.map(RpcAddress.fromSparkURL).
       map(rpcEnv.setupEndpointRef(_, Master.ENDPOINT_NAME))
+    //在rpc中设置提交当前任务的Endpoint,只要设置肯定会运行 new clientEndpoint 类的start方法
     rpcEnv.setupEndpoint("client", new ClientEndpoint(rpcEnv, driverArgs, masterEndpoints, conf))
 
     rpcEnv.awaitTermination()
