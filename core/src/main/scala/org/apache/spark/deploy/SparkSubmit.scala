@@ -55,7 +55,9 @@ import org.apache.spark.util._
 
 /**
  * Whether to submit, kill, or request the status of an application.
+ * submit ,kill或者请求application的状态
  * The latter two operations are currently supported only for standalone and Mesos cluster modes.
+ * 当前仅对standalone模式和Mesos模式支持后两个操作
  */
 private[deploy] object SparkSubmitAction extends Enumeration {
   type SparkSubmitAction = Value
@@ -64,7 +66,7 @@ private[deploy] object SparkSubmitAction extends Enumeration {
 
 /**
  * Main gateway of launching a Spark application.
- *
+ * 启动spark程序的主要网关
  * This program handles setting up the classpath with relevant Spark dependencies and provides
  * a layer over the different cluster managers and deploy modes that Spark supports.
  */
@@ -83,6 +85,7 @@ private[spark] class SparkSubmit extends Logging {
       logInfo(appArgs.toString)
     }
     appArgs.action match {
+      //模式匹配,匹配操作的类型
       case SparkSubmitAction.SUBMIT => submit(appArgs, uninitLog)
       case SparkSubmitAction.KILL => kill(appArgs)
       case SparkSubmitAction.REQUEST_STATUS => requestStatus(appArgs)
@@ -140,6 +143,7 @@ private[spark] class SparkSubmit extends Logging {
    */
   @tailrec
   private def submit(args: SparkSubmitArguments, uninitLog: Boolean): Unit = {
+    //准备提交运行环境
     val (childArgs, childClasspath, sparkConf, childMainClass) = prepareSubmitEnvironment(args)
 
     def doRunMain(): Unit = {
@@ -198,7 +202,7 @@ private[spark] class SparkSubmit extends Logging {
 
   /**
    * Prepare the environment for submitting an application.
-   *
+   * 准备提交程序的运行环境
    * @param args the parsed SparkSubmitArguments used for environment preparation.
    * @param conf the Hadoop Configuration, this argument will only be set in unit test.
    * @return a 4-tuple:
@@ -236,6 +240,7 @@ private[spark] class SparkSubmit extends Logging {
     }
 
     // Set the deploy mode; default is client mode
+    //设置模式,默认是client模式
     var deployMode: Int = args.deployMode match {
       case "client" | null => CLIENT
       case "cluster" => CLUSTER
@@ -303,7 +308,9 @@ private[spark] class SparkSubmit extends Logging {
       case (null, CLUSTER) => args.deployMode = "cluster"
       case _ =>
     }
+    //yarn cluster模式
     val isYarnCluster = clusterManager == YARN && deployMode == CLUSTER
+    //Mesos cluster模式
     val isMesosCluster = clusterManager == MESOS && deployMode == CLUSTER
     val isStandAloneCluster = clusterManager == STANDALONE && deployMode == CLUSTER
     val isKubernetesCluster = clusterManager == KUBERNETES && deployMode == CLUSTER
@@ -649,6 +656,7 @@ private[spark] class SparkSubmit extends Logging {
     }
 
     // In yarn-cluster mode, use yarn.Client as a wrapper around the user class
+    //yarn cluster模式下,使用YarnClusterApplication作为启动类.
     if (isYarnCluster) {
       childMainClass = YARN_CLUSTER_SUBMIT_CLASS
       if (args.isPython) {
@@ -807,6 +815,7 @@ private[spark] class SparkSubmit extends Logging {
     var mainClass: Class[_] = null
 
     try {
+      //加载类
       mainClass = Utils.classForName(childMainClass)
     } catch {
       case e: ClassNotFoundException =>
@@ -824,7 +833,9 @@ private[spark] class SparkSubmit extends Logging {
         }
         throw new SparkUserAppException(CLASS_NOT_FOUND_EXIT_STATUS)
     }
-
+    //将mainclass映射成SparkApplication对象
+    //一般spark任务是在yarn集群用cluster模式提交,
+    // 所以SparkApplicaton的实现类是YarnClusterApplication实例
     val app: SparkApplication = if (classOf[SparkApplication].isAssignableFrom(mainClass)) {
       mainClass.newInstance().asInstanceOf[SparkApplication]
     } else {
@@ -846,6 +857,7 @@ private[spark] class SparkSubmit extends Logging {
     }
 
     try {
+      //调用YarnClusterApplication实例的star 方法
       app.start(childArgs.toArray, sparkConf)
     } catch {
       case t: Throwable =>
